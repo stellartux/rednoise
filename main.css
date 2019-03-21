@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css?family=Orbitron|Fira+Mono|Exo:800i|Roboto+Condensed');
+
+:root {
+  --light-grey: #82858e;
+  --mid-grey: #302a34;
+  --dark-grey: #19171c;
+  --pink-grey: #54454a;
+  --light-teal: #576d6a;
+  --mid-teal: #536765;
+  --dark-teal: #304445;
+  --shadow-teal: #283c3b;
+  --light-brown: #9a9179;
+  --mid-brown: #483b2a;
+  --dark-brown: #544d43;
+  --off-grey: #82858e;
+  --dark-red: #210109;
+  --light-red: #c80920;
+  --rs-red: #af1617;
+  --rs-light-grey: #af1617;
+  --rs-dark-grey: #af1617;
+  --rs-black: #af1617;
+  --bg-top: #427b52;
+  --bg-bottom: #5d743e;
+}
+
+* {
+  border-radius: 0.3em;
+  margin: 0;
+  padding: 0;
+  font-family: Fira Mono, monospace;
+  outline: 0;
+}
+
+body {
+  color: var(--light-grey);
+  background: linear-gradient(var(--bg-top), var(--bg-bottom));
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+#patterneditor {
+  background-color: var(--dark-grey);
+  display: block;
+  align-items: center;
+  overflow-y: scroll;
+  height: 100vh;
+  box-shadow: -0.1em 0 var(--shadow-teal),
+    -1.5em 0 var(--mid-teal),
+    -1.6em 0 var(--shadow-teal),
+    -1.8em 0 var(--light-brown),
+    -2em 0 var(--mid-brown),
+    1.5em 0 var(--mid-teal),
+    1.6em 0;
+  border-radius: 0px;
+  padding: 0 1ch;
+  margin-left: 2em;
+}
+
+#patterneditor::-webkit-scrollbar {
+  width: 1.6em;
+}
+#patterneditor::-webkit-scrollbar-track {
+  background-color: var(--dark-teal);
+  border-left: thick inset var(--mid-teal);
+  border-right: thick inset var(--shadow-teal);
+}
+#patterneditor::-webkit-scrollbar-button {
+  background-color: var(--light-teal);
+  border: medium outset var(--light-teal);
+}
+#patterneditor::-webkit-scrollbar-thumb {
+  background-color: var(--light-teal);
+  border: medium outset var(--light-teal);
+}
+#patterneditor::-webkit-scrollbar-corner {
+  background-color: var(--light-teal);
+  border: medium outset var(--light-teal);
+}
+
+.cell {
+  min-width: 4ch;
+  width: 4ch;
+  background-color: var(--dark-grey);
+  color: var(--light-grey);
+  font-family: Fira Code, monospace;
+  text-align: center;
+  border-radius: 0;
+}
+
+.cell:focus {
+  caret-color: var(--mid-grey);
+  outline-color: var(--pink-grey);
+  background-color: var(--mid-grey);
+}
+
+#song {
+
+}
+.songcontainer {
+  background-color: black;
+  border-radius: 0.5em;
+  padding: 0.1em;
+  counter-reset: patterns;
+}
+
+.songtitle {
+  border: 0.4em solid black;
+  text-align: center;
+  margin: 1ch 0 1ch 0;
+  background-color: var(--dark-red);
+  color: var(--light-red);
+  font-family: Orbitron, sans-serif;
+  font-size: 0.8em;
+}
+
+.addpatternbutton {
+  width: 100%;
+  font-family: Roboto Condensed, sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  margin: 1em 0 6em 0;
+  padding: 0.5em;
+  background-color: var(--dark-grey);
+  color: var(--pink-grey);
+  border: 0.25em groove var(--mid-grey);
+}
+.addpatternbutton:hover {
+  color: var(--light-grey);
+  border: 0.25em groove var(--pink-grey);
+}
+.addpatternbutton:active {
+  color: var(--pink-grey);
+  border: 0.25em inset var(--pink-grey);
+}
+
+
+.patterncontainer {
+  position: relative;
+  margin: 0.5em 0.5em;
+}
+.patternheader {
+  border-radius: 0.3em 0.3em 0 0;
+  background-color: var(--off-grey);
+  color: var(--dark-grey);
+  font-family: Orbitron, sans-serif;
+  text-align: center;
+  font-size: 0.8em;
+  padding: 0em 1.2em 0.5em;
+  margin-bottom: 0.2em;
+  border-top: 0.1em outset #ccc;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  min-height: 1ch;
+}
+.patternheader > button {
+  position: relative;
+  height: 80%;
+  margin-top: 0;
+  width: 3ch;
+}
+.patternheader > button:nth-last-child(1) {
+
+}
+.patternheader::before {
+  counter-increment: patterns;
+  content: counter(patterns, upper-latin);
+  position: absolute;
+  left: 50%;
+}
+.patternbody {
+  padding: 0.1em;
+  display: flex;
+  border: solid thin var(--pink-grey);
+  align-content: space-between;
+  flex: 0 1 auto;
+  background-color: var(--dark-grey);
+  border-radius: 0 0 0.3em 0.3em;
+}
+.pattern {
+  counter-reset: rownumber;
+  border: solid thin var(--pink-grey);
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  margin: 1pt 1ch;
+}
+.row::before {
+  content: counter(rownumber, decimal-leading-zero);
+  counter-increment: rownumber;
+  font-size: 0.6em;
+  width: 1.6em;
+  text-align: right;
+}
+.patternoptions {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.2em;
+}
+.patternoptionkey {
+  display: flex;
+  justify-content: flex-end;
+  border: solid thin var(--pink-grey);
+  background-color: var(--pink-grey);
+  color: var(--dark-grey);
+  min-width: 8ch;
+  padding-left: 0.5ch;
+}
+
+input {
+  width: 6ch;
+  padding-left: 2ch;
+  text-align: center;
+  color: var(--light-grey);
+  background-color: var(--dark-grey);
+  border: thin solid var(--pink-grey);
+}
+
+.patternoptionkey > input {
+  margin-left: 0.5ch;
+}
+
+input:focus {
+  outline: medium solid var(--pink-grey);
+}
+
+.hidden {
+  display: none;
+}
