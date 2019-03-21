@@ -34,13 +34,15 @@ class Song {
     this.addPatternButton.addEventListener('click', () => this.addPattern())
     this.elem.appendChild(this.addPatternButton)
   }
-  addPattern (data) {
+  addPattern (data, previousSibling) {
     let pattern = new Pattern(data)
     this.patterns.push(pattern)
-    this.container.appendChild(pattern.elem)
-  }
-  removePattern (pattern) {
-
+    if (previousSibling) {
+      console.log(previousSibling, previousSibling.nextSibling)
+      this.container.insertBefore(pattern.elem, previousSibling.nextSibling)
+    } else {
+      this.container.appendChild(pattern.elem)
+    }
   }
 
 }
@@ -72,6 +74,21 @@ class Pattern {
     this.patternheader = document.createElement('div')
     this.patternheader.classList.add('patternheader')
     this.elem.appendChild(this.patternheader)
+
+    let el = document.createElement('button')
+    el.addEventListener('click', () => this.minimize())
+    el.textContent = '—'
+    this.patternheader.appendChild(el)
+
+    el = document.createElement('button')
+    el.addEventListener('click', () => this.duplicate())
+    el.textContent = '◫'
+    this.patternheader.appendChild(el)
+
+    el = document.createElement('button')
+    el.addEventListener('click', () => this.remove())
+    el.textContent = 'X'
+    this.patternheader.appendChild(el)
 
     this.patternbody = document.createElement('div')
     this.patternbody.classList.add('patternbody')
@@ -125,6 +142,20 @@ class Pattern {
       }
     }
   }
+  minimize () {
+    this.patternbody.classList.toggle('minimized')
+  }
+  duplicate () {
+    song.addPattern(this.toData(), this.elem)
+  }
+  remove () {
+    song.patterns.splice(song.patterns.indexOf(this))
+    this.elem.parentNode.removeChild(this.elem)
+  }
+  /** Get the values of all child cells as an array */
+  toData () {
+    return this.rows.map(row => row.toData())
+  }
 }
 
 class Row {
@@ -143,11 +174,11 @@ class Row {
       }
     })
   }
-  toExacode () {
-    return this.cells.map(cell => cell.toExacode())
+  toData () {
+    return this.cells.map(cell => cell.toData())
   }
   get isEmpty () {
-    return this.toExacode().every(x => x === '')
+    return this.toData().every(x => x === '')
   }
 }
 
@@ -194,7 +225,7 @@ class Cell {
         return Cell.noteMap[this.value % 12] + Math.floor(this.value / 12)
     }
   }
-  toExacode () {
+  toData () {
     return '' + this.value
   }
 }

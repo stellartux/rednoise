@@ -2,6 +2,7 @@
 
 :root {
   --light-grey: #82858e;
+  --lomid-grey: #666;
   --mid-grey: #302a34;
   --dark-grey: #19171c;
   --pink-grey: #54454a;
@@ -12,7 +13,6 @@
   --light-brown: #9a9179;
   --mid-brown: #483b2a;
   --dark-brown: #544d43;
-  --off-grey: #82858e;
   --dark-red: #210109;
   --light-red: #c80920;
   --rs-red: #af1617;
@@ -58,6 +58,7 @@ main {
   border-radius: 0px;
   padding: 0 1ch;
   margin-left: 2em;
+  min-width: 35ch;
 }
 
 #patterneditor::-webkit-scrollbar {
@@ -137,14 +138,13 @@ main {
   border: 0.25em inset var(--pink-grey);
 }
 
-
 .patterncontainer {
   position: relative;
   margin: 0.5em 0.5em;
 }
 .patternheader {
   border-radius: 0.3em 0.3em 0 0;
-  background-color: var(--off-grey);
+  background-color: var(--light-grey);
   color: var(--dark-grey);
   font-family: Orbitron, sans-serif;
   text-align: center;
@@ -158,19 +158,32 @@ main {
   min-height: 1ch;
 }
 .patternheader > button {
-  position: relative;
-  height: 80%;
-  margin-top: 0;
-  width: 3ch;
+  height: 1.5em;
+  width: 2em;
+  background-color: inherit;
+  border-radius: 0 0 0.5em 0;
+  border: medium groove var(--light-grey);
+  border-top: 0;
 }
-.patternheader > button:nth-last-child(1) {
+.patternheader > button:first-child {
+  border-right: 0;
+  border-radius: 0 0 0 0.5em;
+}
+.patternheader > button:last-child {
+  margin-left: auto;
+  border-bottom-left-radius: 0.5em;
+}
+.patternheader > button:active {
+  background-color: var(--lomid-grey);
+  border: medium inset var(--light-grey);
+}
 
-}
 .patternheader::before {
   counter-increment: patterns;
   content: counter(patterns, upper-latin);
   position: absolute;
   left: 50%;
+  align-self: center;
 }
 .patternbody {
   padding: 0.1em;
@@ -234,4 +247,9 @@ input:focus {
 
 .hidden {
   display: none;
+}
+
+.minimized {
+  height: 0;
+  overflow: hidden;
 }
