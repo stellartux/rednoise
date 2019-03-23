@@ -5,11 +5,57 @@
     <title>RedNoise</title>
     <link rel="stylesheet" href="main.css">
     <link rel="shortcut icon" href="favicon.png">
+    <script src="https://stellartux.github.io/websynth/note.js" charset="utf-8"></script>
   </head>
   <body>
     <main>
       <div id="patterneditor">
         <div id="song"></div>
+      </div>
+      <div id="display">
+        <div class="checkerboard">
+          <div class="globaloptions">
+            <label>Octave <input id="octave" type="number" value="4" min="0" max="9" step="1"></label>
+            <label>Volume <input id="masterGain" type="range" value="0.5" min="0" max="1" step="0.01"></label>
+          </div>
+        </div>
+      </div>
+      <div id="rsarea">
+        <div id="redshift">
+          <canvas id="canvas" width="200" height="300"></canvas>
+        </div>
+      </div>
+      <div id="playbackcontrols">
+        <button name="reset" onclick="song.reset()">
+          <svg width=38% height="50%" viewbox="0 0 102 100">
+            <path d="M20 99 V80 H75 Q80 80 80 75 V45 Q80 40 75 40 H40 V60 L0 30 L40 0 V20 H75 Q99 20 99 40 V80 Q99 99 80 99 Z"
+            style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:4%;"/>
+          </svg>
+        </button>
+        <button name="stop" onclick="song.stop()">
+          <svg width="33%" height="30%">
+            <rect width="100%" height="95%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:4%;" />
+          </svg>
+        </button>
+        <!--
+        <button name="pause" onclick="song.pause()">
+          <svg width="33%" height="30%">
+            <rect width="33%" height="100%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;" />
+            <rect x="66%" width="33%" height="100%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;" />
+          </svg>
+        </button>
+        -->
+        <button name="step" onclick="song.pause();song.step()">
+          <svg width="60%" height="30%" viewbox="0 0 100 100">
+            <rect width="20" height="100%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;" />
+            <polygon points="40,0 100,50 40,100" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;"/>
+          </svg>
+        </button>
+        <button name="play" onclick="song.play()">
+          <svg width=33% height="33%" viewbox="0 0 100 100">
+            <polygon points="0,0 100,50 0,100" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;"/>
+          </svg>
+        </button>
       </div>
     </main>
     <script src="main.js" charset="utf-8"></script>

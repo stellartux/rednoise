@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Orbitron|Fira+Mono|Exo:800i|Roboto+Condensed');
 
 :root {
+  --highlight: #dddddd;
   --light-grey: #82858e;
-  --lomid-grey: #666;
+  --lomid-grey: #666666;
   --mid-grey: #302a34;
   --dark-grey: #19171c;
   --pink-grey: #54454a;
@@ -21,25 +22,33 @@
   --rs-black: #af1617;
   --bg-top: #427b52;
   --bg-bottom: #5d743e;
+  --button-colour: #868f9f;
+  --dark-button: #5b637a;
+  --shadow: #00000080;
+  --button-style: "fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:4%";
 }
 
 * {
   border-radius: 0.3em;
   margin: 0;
   padding: 0;
-  font-family: Fira Mono, monospace;
+  font-family: 'Fira Mono', monospace;
   outline: 0;
 }
 
 body {
   color: var(--light-grey);
+  overflow-y: hidden;
   background: linear-gradient(var(--bg-top), var(--bg-bottom));
 }
 
 main {
   display: flex;
+  width: 100vw;
   flex-direction: row;
   position: relative;
+  align-items: flex-end;
+  justify-content: flex-start;
 }
 
 #patterneditor {
@@ -53,12 +62,13 @@ main {
     -1.6em 0 var(--shadow-teal),
     -1.8em 0 var(--light-brown),
     -2em 0 var(--mid-brown),
-    1.5em 0 var(--mid-teal),
-    1.6em 0;
+    1.4em 0 var(--mid-teal),
+    1.7em 0 0.1em var(--light-grey);
   border-radius: 0px;
   padding: 0 1ch;
-  margin-left: 2em;
+  margin: 0 1.5em 0 2em;
   min-width: 35ch;
+  flex: 0 0 auto;
 }
 
 #patterneditor::-webkit-scrollbar {
@@ -85,21 +95,21 @@ main {
 .cell {
   min-width: 4ch;
   width: 4ch;
-  background-color: var(--dark-grey);
-  color: var(--light-grey);
   font-family: Fira Code, monospace;
   text-align: center;
   border-radius: 0;
 }
-
-.cell:focus {
+.cell.current {
   caret-color: var(--mid-grey);
   outline-color: var(--pink-grey);
-  background-color: var(--mid-grey);
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
 }
+.row.current .cell:not(.current) {
 
-#song {
-
+}
+.row.current {
+  background-color: var(--mid-grey);
 }
 .songcontainer {
   background-color: black;
@@ -107,7 +117,6 @@ main {
   padding: 0.1em;
   counter-reset: patterns;
 }
-
 .songtitle {
   border: 0.4em solid black;
   text-align: center;
@@ -126,11 +135,11 @@ main {
   margin: 1em 0 6em 0;
   padding: 0.5em;
   background-color: var(--dark-grey);
-  color: var(--pink-grey);
+  color: var(--light-grey);
   border: 0.25em groove var(--mid-grey);
 }
 .addpatternbutton:hover {
-  color: var(--light-grey);
+  background-color: var(--mid-grey);
   border: 0.25em groove var(--pink-grey);
 }
 .addpatternbutton:active {
@@ -199,7 +208,7 @@ main {
   border: solid thin var(--pink-grey);
   display: flex;
   flex-direction: column;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
 }
 .row {
   display: flex;
@@ -218,7 +227,7 @@ main {
   flex-direction: column;
   padding-left: 0.2em;
 }
-.patternoptionkey {
+.tag {
   display: flex;
   justify-content: flex-end;
   border: solid thin var(--pink-grey);
@@ -228,16 +237,13 @@ main {
   padding-left: 0.5ch;
 }
 
-input {
+input[type="number"] {
   width: 6ch;
   padding-left: 2ch;
   text-align: center;
   color: var(--light-grey);
   background-color: var(--dark-grey);
   border: thin solid var(--pink-grey);
-}
-
-.patternoptionkey > input {
   margin-left: 0.5ch;
 }
 
@@ -252,4 +258,94 @@ input:focus {
 .minimized {
   height: 0;
   overflow: hidden;
+  background-color: var(--pink-grey);
+}
+
+#display {
+  position: relative;
+  height: 100vh;
+  min-width: 20ch;
+  flex: 1 2 auto;
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0 4px;
+  border-radius: 0;
+  background: linear-gradient(to bottom,
+    var(--dark-grey) 0%, var(--dark-teal) 50%, var(--dark-grey) 100%);
+}
+
+.checkerboard {
+  height: 100%;
+  width: 100%;
+  background-image: linear-gradient(45deg, var(--shadow-teal) 25%,
+      transparent 25%, transparent 75%, var(--shadow-teal) 75%, var(--shadow-teal)),
+    linear-gradient(45deg, var(--shadow-teal) 25%, transparent 25%,
+      transparent 75%, var(--shadow-teal) 75%, var(--shadow-teal));
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+}
+
+#playbackcontrols {
+  position: fixed;
+  display: flex;
+  left: 35vw;
+  bottom: 0;
+  max-width: 55vw;
+  padding: 1ch 2ch;
+  border-radius: 0.25em 0.25em 0 0;
+  background-color: var(--light-teal);
+  border: medium solid var(--dark-teal);
+  border-bottom: 0;
+  box-shadow: inset 0 -1ch 2ch var(--light-teal),
+    inset 0 -2ch var(--dark-teal),
+    inset -0.4ch -2.3ch 1.2ch var(--light-grey),
+    0.5ch 2ch 2ch var(--shadow),
+    -0.5ch 2ch 2ch var(--shadow);
+}
+#playbackcontrols > button {
+  width: 6.5ch;
+  height: 8ch;
+  margin: 1px;
+  background-color: var(--button-colour);
+  border: medium groove var(--button-colour);
+  box-shadow: inset 0 -1ch var(--light-grey),
+    inset 0 -1.1ch var(--mid-grey),
+    0 0 1ch var(--shadow-teal),
+    0 0 0.5ch var(--dark-grey);
+}
+#playbackcontrols > button:hover {
+  box-shadow: inset -0.2ch 0.2ch 1ch var(--highlight),
+    inset 0.2ch 0 1ch var(--highlight),
+    inset 0 -1ch var(--light-grey),
+    inset 0 -1.1ch var(--mid-grey),
+    0 0 1ch var(--shadow-teal),
+    0 0 0.5ch var(--dark-grey);
+}
+#playbackcontrols > button:active {
+  background-color: var(--button-colour);
+  border: medium inset var(--button-colour);
+  box-shadow: inset -0.4ch 0.4ch 1ch var(--mid-grey),
+    inset 0 -0.2ch var(--light-grey),
+    inset 0 -0.3ch var(--mid-grey),
+    0 0 1ch var(--shadow-teal),
+    0 0 0.5ch var(--dark-grey);
+}
+#playbackcontrols > button > svg {
+  border-radius: 0;
+  margin: auto;
+}
+
+#rsarea {
+  flex: 2 3 auto;
+  background: linear-gradient(var(--bg-top), var(--bg-bottom));
+  border-radius: 0;
+  border: 0;
+  height: 100vh;
+}
+
+.globaloptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Orbitron, monospace;
 }
