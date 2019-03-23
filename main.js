@@ -5,10 +5,6 @@ const keyboardKeymap = { '0': 27, '2': 13, '3': 15, '5': 18, '6': 20, '7': 22,
   'd': 3, 'g': 6, 'h': 8, 'j': 10, 'l': 13, ';': 15, '=': 30 }
 const midiToFrequency = n => 13.75 * Math.pow(2, (n - 9) / 12)
 
-function getIndex (el) {
-  return Array.prototype.indexOf.call(el.parentNode.childNodes, el)
-}
-
 class Song {
   constructor (target, songData) {
     this.context = target.context ? target.context : target
@@ -25,29 +21,8 @@ class Song {
     }
     this.instruments.push(new NoiseInstrument(this.analysers[3]))
 
-    this.patterns = []
-    this.playhead = (ps => {
-      let pattern = 0, row = 0, patterns = ps
-      return {
-        get pattern () {
-          return pattern
-        },
-        set pattern (p) {
-          patterns[pattern].rows[row].elem.classList.remove('current')
-          pattern = p
-          patterns[p].rows[row].elem.classList.add('current')
-        },
-        get row () {
-          return row
-        },
-        set row (r) {
-          patterns[pattern].rows[row].elem.classList.remove('current')
-          row = r
-          patterns[pattern].rows[r].elem.classList.add('current')
-        }
-      }
-    })(this.patterns)
     this.elem = document.getElementById('song')
+    this.elem.owner = this
     while (this.elem.lastChild) {
       this.elem.removeChild(this.elem.lastChild)
     }
@@ -73,15 +48,37 @@ class Song {
     this.addPatternButton.textContent = 'CREATE NEW PATTERN'
     this.addPatternButton.addEventListener('click', () => this.addPattern())
     this.elem.appendChild(this.addPatternButton)
+    this._pattern = 0
+    this._row = 0
   }
+  get playheadPattern () {
+    return this._pattern
+  }
+  set playheadPattern (p) {
+    if (document.querySelector('.row.current'))
+      document.querySelector('.row.current').classList.remove('current')
+    this._pattern = p
+    this.patterns[p].rows[this._row].elem.classList.add('current')
+  }
+  get playheadRow () {
+    return this._row
+  }
+  set playheadRow (r) {
+    document.querySelector('.row.current').classList.remove('current')
+    this._row = r
+    this.patterns[this._pattern].rows[r].elem.classList.add('current')
+  }
+
   addPattern (data, previousSibling) {
-    let pattern = new Pattern(data)
-    this.patterns.push(pattern)
+    let pattern = new Pattern(data, this)
     if (previousSibling) {
       this.container.insertBefore(pattern.elem, previousSibling.nextSibling)
     } else {
       this.container.appendChild(pattern.elem)
     }
+  }
+  get patterns () {
+    return Array.from(document.querySelectorAll('.patterncontainer')).map(p => p.owner)
   }
   play () {
     this.clearValue = window.setInterval(this.step.bind(this), 33)
@@ -93,22 +90,16 @@ class Song {
     }
   }
   reset () {
-    this.playhead.pattern = 0
-    this.playhead.row = 0
+    this.playheadRow = 0
+    this.playheadPattern = 0
   }
   step () {
-    let pattern = this.patterns[this.playhead.pattern],
-      row = pattern.rows[this.playhead.row]
+    let pattern = this.patterns[this.playheadPattern]
+    let row = pattern.rows[this.playheadRow]
     row.play(this.instruments)
-    if(row.elem.nextSibling) {
-      this.playhead.row += 1
-    } else {
-      this.playhead.row = 0
-      if (pattern.elem.nextSibling) {
-        this.playhead.pattern += 1
-      } else {
-        this.playhead.pattern = 0
-      }
+    this.playheadRow = (this.playheadRow + 1) % pattern.rows.length
+    if (this.playheadRow === 0) {
+      this.playheadPattern = (this.playheadPattern + 1) % this.patterns.length
     }
   }
   stop () {
@@ -141,9 +132,11 @@ class Pattern {
       ['', '', '', ''],
       ['', '', '', ''],
       ['', '', '', '']
-    ]
+    ], parent
   ) {
+    this.parent = parent
     this.elem = document.createElement('div')
+    this.elem.owner = this
     this.elem.classList.add('patterncontainer')
 
     this.patternheader = document.createElement('div')
@@ -173,21 +166,19 @@ class Pattern {
     this.patternbody.appendChild(this.container)
     this.container.addEventListener('keydown', ev => {
       if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
-        let prevCell = this.elem.querySelector('.current')
-        let nextCell = ev.key === 'ArrowLeft' ?
-          prevCell.previousSibling : prevCell.nextSibling
-        if (nextCell) {
-          nextCell.focus()
+        let prevRow = document.querySelector('.row.current')
+        let nextRow = ev.key === 'ArrowUp' ?
+          prevRow.previousSibling : prevRow.nextSibling
+        if (nextRow) {
+          let cellIndex = document.querySelector('.cell.current').owner.index
+          nextRow.children[cellIndex].focus()
         }
         ev.preventDefault()
       }
     })
 
-    this.rows = []
     for (let d of loadData) {
-      let row = new Row(d)
-      this.rows.push(row)
-      this.container.appendChild(row.elem)
+      this.container.appendChild((new Row(d, this)).elem)
     }
 
     this.options = document.createElement('div')
@@ -205,7 +196,7 @@ class Pattern {
     lengthInput.setAttribute('max', '128')
     lengthInput.setAttribute('step', '1')
     lengthInput.setAttribute('value', this.length)
-    lengthInput.addEventListener('input', ev => {
+    lengthInput.addEventListener('change', ev => {
       this.length = ev.target.value
     })
     lengthInputDiv.appendChild(lengthInput)
@@ -216,22 +207,21 @@ class Pattern {
       }
     })
   }
+  get index () {
+    return Array.prototype.indexOf.call(this.elem.parentNode.childNodes, this.elem)
+  }
+  get rows () {
+    return Array.from(this.elem.querySelectorAll('.row')).map(r => r.owner)
+  }
   get length () {
     return this.rows.length
   }
   set length (length) {
-    if (length === this.rows.length) {
-      this.rows.length = length
-    } else if (length < this.rows.length) {
-      while (length < this.rows.length) {
-        this.container.removeChild(this.rows[this.rows.length - 1].elem)
-        this.rows.length--
-      }
-    } else {
-      for (let i = this.rows.length; i < length; i++) {
-        this.rows.push(new Row())
-        this.container.appendChild(this.rows[i].elem)
-      }
+    while (length < this.rows.length) {
+      this.container.removeChild(this.container.lastChild)
+    }
+    while (length > this.rows.length) {
+      this.container.appendChild((new Row(undefined,this)).elem)
     }
   }
   minimize () {
@@ -241,11 +231,17 @@ class Pattern {
     song.addPattern(this.toData(), this.elem)
   }
   remove () {
+    if (this.elem.querySelector('.current')) {
+      this.parent.playheadRow = 0
+      this.parent.playheadPattern = 0
+    }
     const isOnlyChild = this.elem.previousSibling === this.elem.nextSibling
     song.patterns.splice(song.patterns.indexOf(this))
     this.elem.parentNode.removeChild(this.elem)
     if (isOnlyChild) {
       song.addPattern()
+      this.parent.playheadRow = 0
+      this.parent.playheadPattern = 0
     }
   }
   /** Get the values of all child cells as an array */
@@ -255,14 +251,13 @@ class Pattern {
 }
 
 class Row {
-  constructor (cellData = ['', '', '', '']) {
+  constructor (cellData = ['', '', '', ''], parent) {
+    this.parent = parent
     this.elem = document.createElement('div')
+    this.elem.owner = this
     this.elem.classList.add('row')
-    this.cells = []
     for (let c of cellData) {
-      let cell = new Cell(c)
-      this.cells.push(cell)
-      this.elem.appendChild(cell.elem)
+      this.elem.appendChild((new Cell(c, this)).elem)
     }
     this.elem.addEventListener('keydown', ev => {
       if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') {
@@ -276,8 +271,14 @@ class Row {
       }
     })
   }
+  get cells () {
+    return Array.from(this.elem.querySelectorAll('.cell')).map(c => c.owner)
+  }
   toData () {
     return this.cells.map(cell => cell.toData())
+  }
+  get index () {
+    return Array.prototype.indexOf.call(this.elem.parentNode.children, this.elem)
   }
   get isEmpty () {
     return this.toData().every(x => x === '')
@@ -290,8 +291,10 @@ class Row {
 }
 
 class Cell {
-  constructor (value = '') {
+  constructor (value = '', parent) {
+    this.parent = parent
     this.elem = document.createElement('div')
+    this.elem.owner = this
     this.elem.classList.add('cell')
     this.elem.setAttribute('tabIndex', -1)
     this.elem.addEventListener('keydown', ev => {
@@ -316,6 +319,10 @@ class Cell {
     })
     this.elem.addEventListener('focus', ev => {
       this.elem.classList.add('current')
+      this.parent.elem.classList.add('current')
+      let song = this.parent.parent.parent
+      song.playheadPattern = this.parent.parent.index
+      song.playheadRow = this.parent.index
     })
     this.elem.addEventListener('blur', ev => {
       if (ev.relatedTarget && ev.relatedTarget.classList.contains('cell')) {
@@ -323,6 +330,9 @@ class Cell {
       }
     })
     this.value = value
+  }
+  get index () {
+    return Array.prototype.indexOf.call(this.elem.parentElement.children, this.elem)
   }
   get value () {
     return this._value
@@ -407,9 +417,9 @@ class NoiseInstrument {
 const audio = new (window.AudioContext || window.webkitAudioContext)(),
   masterGain = new GainNode(audio, { gain: 0.5 })
 masterGain.connect(audio.destination)
-let song = new Song(masterGain, {
-    title: "MY SONG",
-    notes: [
+var song = new Song(masterGain, {
+  title: 'MY SONG',
+  notes: [
     [[62, 65, 69, 60],
     ['', '', '', '0'],
     ['', '', '', 60],
@@ -419,7 +429,6 @@ let song = new Song(masterGain, {
     ['', '', '', 60],
     ['', '', '', '0']]
   ]})
-
 
 // Event handlers
 
