@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Orbitron|Fira+Mono|Exo:800i|Roboto+Condensed');
+@import url('https://fonts.googleapis.com/css?family=Orbitron|Fira+Mono|Exo:800i|Roboto+Condensed|Roboto+Mono');
 
 :root {
   --highlight: #dddddd;
@@ -97,7 +97,7 @@ button {
 .cell {
   min-width: 4ch;
   width: 4ch;
-  font-family: Fira Code, monospace;
+  font-family: Fira Mono, monospace;
   text-align: center;
   border-radius: 0;
   cursor: pointer;
@@ -271,7 +271,7 @@ input:focus {
 #display {
   position: relative;
   height: 100vh;
-  min-width: 25ch;
+  min-width: 27ch;
   max-width: 25%;
   flex: 2 4 auto;
   display: flex;
@@ -283,9 +283,9 @@ input:focus {
 }
 
 .lockwidth {
-  width: 24.5ch;
-  min-width: 24.5ch;
-  max-width: 24.5ch;
+  width: 26.5ch;
+  min-width: 26.5ch;
+  max-width: 26.5ch;
 }
 
 .checkerboard {
@@ -294,7 +294,7 @@ input:focus {
   justify-content: flex-end;
   height: 100%;
   width: 100%;
-  min-width: 25ch;
+  min-width: 26.5ch;
   background-image: linear-gradient(45deg, var(--shadow-teal) 25%,
       transparent 25%, transparent 75%, var(--shadow-teal) 75%, var(--shadow-teal)),
     linear-gradient(45deg, var(--shadow-teal) 25%, transparent 25%,
@@ -330,7 +330,6 @@ input:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: "Fira Mono", monospace;
   font-size: 0.8em;
   background-color: var(--dark-grey);
   padding: 0.5ch 1ch;
@@ -342,8 +341,8 @@ input:focus {
   flex: 0 1 auto;
   border-radius: 0;
   width: 60%;
-  min-width: 22ch;
-  max-width: 25ch;
+  min-width: 24ch;
+  max-width: 27ch;
   background-color: var(--dark-teal);
   padding-top: 1.5ch;
   box-shadow: inset 0 0 2ch var(--light-teal),
@@ -368,12 +367,16 @@ input:focus {
   margin: auto;
   padding: 1ch;
 }
+#codeoutput * {
+  font-family: "Roboto Mono", monospace;
+}
 #codeoutput > textarea {
   margin: auto;
   background-color: var(--dark-grey);
   color: var(--light-grey);
   border: inset medium var(--pink-grey);
-  font-family: "Fira Mono", monospace;
+  overflow-x: hidden;
+  word-wrap: none;
 }
 .code-buttons {
   display: flex;
@@ -382,9 +385,14 @@ input:focus {
   max-width: 19ch;
   flex-wrap: wrap;
 }
-.code-button {
+.code-buttons > * {
   flex: 2 1 auto;
   width: 50%;
+}
+.code-buttons > label {
+  background-color: var(--dark-grey);
+  font-size: 0.9rem;
+  padding: 0.1rem 0;
 }
 #display button {
   background-color: var(--dark-grey);

@@ -3,7 +3,7 @@ const keyboardKeymap = { '0': 27, '2': 13, '3': 15, '5': 18, '6': 20, '7': 22,
   ',': 12, '.': 14, '/': 16, 'q': 12, 'w': 14, 'e': 16, 'r': 17, 't': 19,
   'y': 21, 'u': 23, 'i': 24, 'o': 26, 'p': 28, '[': 29, ']': 31, 's': 1,
   'd': 3, 'g': 6, 'h': 8, 'j': 10, 'l': 13, ';': 15, '=': 30 }
-const midiToFrequency = n => 13.75 * Math.pow(2, (n - 9) / 12)
+const midiToFrequency = n => 13.75 * 2 ** ((n - 9) / 12)
 
 class Song {
   constructor (target, songData) {
@@ -54,6 +54,30 @@ class Song {
     this.elem.appendChild(this.addPatternButton)
     this._pattern = 0
     this._row = 0
+
+    this.container.addEventListener('keydown', ev => {
+      if ((ev.key === 'ArrowUp' && ev.ctrlKey) || ev.key === 'PageUp') {
+        this.focus(-1)
+        ev.preventDefault()
+      } else if ((ev.key === 'ArrowDown' && ev.ctrlKey) || ev.key === 'PageDown') {
+        this.focus(1)
+        ev.preventDefault()
+      } else if (ev.key === 'Space' && ev.ctrlKey) {
+        this.pause()
+        this.stop()
+        this.reset()
+      } else if (ev.code === 'Space') {
+        if (this.isPlaying) {
+          this.pause()
+          this.stop()
+        } else {
+          this.play()
+        }
+      } else if (ev.key === 'Enter' && ev.target.localName !== 'input') {
+        this.pause()
+        this.step()
+      }
+    })
   }
   get playheadPattern () {
     return this._pattern
@@ -69,11 +93,15 @@ class Song {
     return this._row
   }
   set playheadRow (r) {
-    document.querySelector('.row.current').classList.remove('current')
+    if (document.querySelector('.row.current')) {
+      document.querySelector('.row.current').classList.remove('current')
+    }
     this._row = r
     this.patterns[this._pattern].rows[r].elem.classList.add('current')
   }
-
+  get focusFollowsPlayhead () {
+    return document.getElementById('focusPlayhead').checked
+  }
   addPattern (data, previousSibling) {
     let pattern = new Pattern(data, this)
     if (previousSibling) {
@@ -84,6 +112,9 @@ class Song {
   }
   get patterns () {
     return Array.from(document.querySelectorAll('.patterncontainer')).map(p => p.owner)
+  }
+  get isPlaying () {
+    return this.clearValue !== undefined
   }
   play () {
     this.clearValue = window.setInterval(this.step.bind(this), 33)
@@ -97,6 +128,9 @@ class Song {
   reset () {
     this.playheadRow = 0
     this.playheadPattern = 0
+    if (this.focusFollowsPlayhead) {
+      this.patterns[0].rows[0].cells[0].elem.focus()
+    }
   }
   step () {
     let pattern = this.patterns[this.playheadPattern]
@@ -105,6 +139,10 @@ class Song {
     this.playheadRow = (this.playheadRow + 1) % pattern.rows.length
     if (this.playheadRow === 0) {
       this.playheadPattern = (this.playheadPattern + 1) % this.patterns.length
+    }
+    if (this.focusFollowsPlayhead && this.elem.querySelector('.cell.current')) {
+      let cellIndex = this.elem.querySelector('.cell.current').owner.index
+      this.patterns[this.playheadPattern].rows[this.playheadRow].focus(cellIndex)
     }
   }
   stop () {
@@ -123,7 +161,9 @@ class Song {
       instructions = [],
       waitLength = 1,
       code = ''
-
+    if (!document.getElementById('loopforever').checked) {
+      data.push(['0', '0', '0', '0'])
+    }
     if (isEmpty(data[0])) instructions.push('0')
     for (let row of data) {
       if (isEmpty(row)) {
@@ -147,7 +187,7 @@ class Song {
     while (instructions.length) {
       let charLength = 5,
         instSet = ['DATA']
-      while ((charLength + instructions[0].length + 1) <= 22) {
+      while ((charLength + instructions[0].length + 1) <= 24) {
         charLength += instructions[0].length + 1
         instSet.push(instructions.shift())
         if (instructions.length === 0) {
@@ -156,7 +196,8 @@ class Song {
       }
       code = code.concat(instSet.join(' ')).concat('\n')
     }
-    el.value = code + this.basecode()
+    code += this.basecode(document.getElementById('loopforever').checked)
+    el.value = code
   }
   basecode (loop = true) {
     return 'LINK 801\nMARK NEWNOTE\n' +
@@ -217,14 +258,11 @@ class Pattern {
     this.elem.appendChild(this.patternbody)
     this.patternbody.appendChild(this.container)
     this.container.addEventListener('keydown', ev => {
-      if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
-        let prevRow = document.querySelector('.row.current')
-        let nextRow = ev.key === 'ArrowUp' ?
-          prevRow.previousSibling : prevRow.nextSibling
-        if (nextRow) {
-          let cellIndex = document.querySelector('.cell.current').owner.index
-          nextRow.children[cellIndex].focus()
-        }
+      if (ev.key === 'ArrowUp') {
+        this.focus(-1)
+        ev.preventDefault()
+      } else if (ev.key === 'ArrowDown') {
+        this.focus(1)
         ev.preventDefault()
       }
     })
@@ -258,6 +296,12 @@ class Pattern {
         el.classList.remove('current')
       }
     })
+  }
+  focus (newIndex) {
+    let currentRow = document.querySelector('.cell.current').owner.parent
+    let rowIndex = (currentRow.index + newIndex + this.length) % this.length
+    let cellIndex = document.querySelector('.cell.current').owner.index
+    this.rows[rowIndex].cells[cellIndex].elem.focus()
   }
   get index () {
     return Array.prototype.indexOf.call(this.elem.parentNode.childNodes, this.elem)
@@ -326,6 +370,9 @@ class Row {
   get cells () {
     return Array.from(this.elem.querySelectorAll('.cell')).map(c => c.owner)
   }
+  focus (index) {
+    this.cells[index].elem.focus()
+  }
   toData () {
     return this.cells.map(cell => cell.toData())
   }
@@ -342,9 +389,14 @@ class Row {
   }
 }
 
+/** A single note value and its UI
+* @param {string|number} value The exacode of the note value represented
+* @param {Row} parent The Row which this Cell belongs to
+*/
 class Cell {
   constructor (value = '', parent) {
     this.parent = parent
+    this.song = parent.parent.parent
     this.elem = document.createElement('div')
     this.elem.owner = this
     this.elem.classList.add('cell')
@@ -371,13 +423,17 @@ class Cell {
     })
     this.elem.addEventListener('focus', ev => {
       this.elem.classList.add('current')
-      this.parent.elem.classList.add('current')
-      let song = this.parent.parent.parent
-      song.playheadPattern = this.parent.parent.index
-      song.playheadRow = this.parent.index
+      if (this.song.focusFollowsPlayhead) {
+        this.song.playheadPattern = this.parent.parent.index
+        this.song.playheadRow = this.parent.index
+        this.parent.elem.classList.add('current')
+      }
     })
     this.elem.addEventListener('blur', ev => {
-      if (ev.relatedTarget && ev.relatedTarget.classList.contains('cell')) {
+      if (ev.relatedTarget
+        && ev.relatedTarget.classList.contains('cell')
+        && this.song.focusFollowsPlayhead
+      ) {
         this.elem.classList.remove('current')
       }
     })
@@ -441,13 +497,26 @@ class NoiseInstrument {
     this.target = target
     this.context = target.context ? target.context : target
     this.buffer = this.context.createBuffer(1,
-      this.context.sampleRate * 4, this.context.sampleRate)
+      this.context.sampleRate * 8, this.context.sampleRate)
     let data = this.buffer.getChannelData(0)
     for (let i = 0; i < data.length; i++) {
       data[i] = Math.random() * 2 - 1
     }
     this.filter = new BiquadFilterNode(this.context, { type: 'bandpass' })
-    this.filter.connect(target)
+    this.waveshaper = new WaveShaperNode(this.context, {
+      curve: Float32Array.from([1, 1, 0.3, 0, -0.3, -1, -1])
+    })
+    this.compressor = new DynamicsCompressorNode(this.context, {
+      knee: 2,
+      ratio: 20,
+      release: 0.1,
+      threshold: -40
+    })
+    this.gain = new GainNode(this.context, { gain: 2 })
+    this.filter.connect(this.compressor)
+      .connect(this.gain)
+      .connect(this.waveshaper)
+      .connect(this.target)
   }
   play (pitch) {
     if (this.source) this.source.stop()
@@ -479,13 +548,7 @@ var song = new Song(masterGain, urlparams.search ? {
 } : {
   title: 'MY SONG',
   notes: [
-    [[62, 65, 69, 40],
-    ['', '', '', '0'],
-    ['', '', '', ''],
-    ['', '', '', ''],
-    ['0', '0', '0', 90],
-    ['', '', '', '0'],
-    ['', '', '', 90],
+    [['', '', '', 38],
     ['', '', '', '0']]
   ]})
 
