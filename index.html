@@ -3,9 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>RedNoise</title>
-    <link rel="stylesheet" href="main.css">
-    <link rel="shortcut icon" href="favicon.png">
     <script src="https://stellartux.github.io/websynth/note.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="redshift.css">
+    <link rel="stylesheet" href="playbackcontrols.css">
+    <link rel="shortcut icon" href="favicon.png">
   </head>
   <body>
     <main>
@@ -14,9 +16,19 @@
       </div>
       <div id="display">
         <div class="checkerboard">
-          <div class="globaloptions">
-            <label>Octave <input id="octave" type="number" value="4" min="0" max="9" step="1"></label>
-            <label>Volume <input id="masterGain" type="range" value="0.5" min="0" max="1" step="0.01"></label>
+          <div class="displayholder">
+            <div id="codeoutput">
+              <textarea rows="8" cols="22" class="lockwidth"></textarea>
+              <div class="code-buttons">
+                <button class="code-button">Generate</button>
+                <button class="code-button">Copy</button>
+              </div>
+            </div>
+            <div class="globaloptions">
+              <label>Octave <input id="octave" type="number" value="4" min="0" max="9" step="1"></label>
+              <label>Line Skip <input id="lineSkip" type="number" value="1" min="0" step="1"></label>
+              <label>Volume <input id="masterGain" type="range" value="0.5" min="0" max="1" step="0.01"></label>
+            </div>
           </div>
         </div>
       </div>
@@ -37,14 +49,6 @@
             <rect width="100%" height="95%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:4%;" />
           </svg>
         </button>
-        <!--
-        <button name="pause" onclick="song.pause()">
-          <svg width="33%" height="30%">
-            <rect width="33%" height="100%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;" />
-            <rect x="66%" width="33%" height="100%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;" />
-          </svg>
-        </button>
-        -->
         <button name="step" onclick="song.pause();song.step()">
           <svg width="60%" height="30%" viewbox="0 0 100 100">
             <rect width="20" height="100%" rx="10%" ry="8%" style="fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:3%;" />

@@ -111,6 +111,9 @@ class Song {
   toData () {
     return this.patterns.map(pattern => pattern.toData())
   }
+  toExacode () {
+    
+  }
 }
 
 class Pattern {
@@ -417,6 +420,9 @@ class NoiseInstrument {
 const audio = new (window.AudioContext || window.webkitAudioContext)(),
   masterGain = new GainNode(audio, { gain: 0.5 })
 masterGain.connect(audio.destination)
+
+let urlparams = (new URL(document.location)).searchParams
+
 var song = new Song(masterGain, {
   title: 'MY SONG',
   notes: [

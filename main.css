@@ -16,12 +16,6 @@
   --dark-brown: #544d43;
   --dark-red: #210109;
   --light-red: #c80920;
-  --rs-red: #af1617;
-  --rs-light-grey: #af1617;
-  --rs-dark-grey: #af1617;
-  --rs-black: #af1617;
-  --bg-top: #427b52;
-  --bg-bottom: #5d743e;
   --button-colour: #868f9f;
   --dark-button: #5b637a;
   --shadow: #00000080;
@@ -32,7 +26,7 @@
   border-radius: 0.3em;
   margin: 0;
   padding: 0;
-  font-family: 'Fira Mono', monospace;
+  font-family: "Fira Mono", monospace;
   outline: 0;
 }
 
@@ -49,6 +43,9 @@ main {
   position: relative;
   align-items: flex-end;
   justify-content: flex-start;
+}
+button {
+  cursor: pointer;
 }
 
 #patterneditor {
@@ -98,6 +95,7 @@ main {
   font-family: Fira Code, monospace;
   text-align: center;
   border-radius: 0;
+  cursor: pointer;
 }
 .cell.current {
   caret-color: var(--mid-grey);
@@ -105,8 +103,8 @@ main {
   background-color: var(--light-grey);
   color: var(--dark-grey);
 }
-.row.current .cell:not(.current) {
-
+.row:nth-child(4n+1) {
+  border-right: solid medium var(--pink-grey);
 }
 .row.current {
   background-color: var(--mid-grey);
@@ -129,7 +127,7 @@ main {
 
 .addpatternbutton {
   width: 100%;
-  font-family: Roboto Condensed, sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
   font-style: italic;
   font-weight: 700;
   margin: 1em 0 6em 0;
@@ -155,7 +153,7 @@ main {
   border-radius: 0.3em 0.3em 0 0;
   background-color: var(--light-grey);
   color: var(--dark-grey);
-  font-family: Orbitron, sans-serif;
+  font-family: "Orbitron", sans-serif;
   text-align: center;
   font-size: 0.8em;
   padding: 0em 1.2em 0.5em;
@@ -217,10 +215,13 @@ main {
 }
 .row::before {
   content: counter(rownumber, decimal-leading-zero);
-  counter-increment: rownumber;
   font-size: 0.6em;
   width: 1.6em;
   text-align: right;
+}
+.row::after {
+  content: '';
+  counter-increment: rownumber;
 }
 .patternoptions {
   display: flex;
@@ -254,18 +255,20 @@ input:focus {
 .hidden {
   display: none;
 }
-
 .minimized {
   height: 0;
   overflow: hidden;
+}
+#patterneditor .minimized {
   background-color: var(--pink-grey);
 }
 
 #display {
   position: relative;
   height: 100vh;
-  min-width: 20ch;
-  flex: 1 2 auto;
+  min-width: 25ch;
+  max-width: 25%;
+  flex: 2 4 auto;
   display: flex;
   flex-direction: column;
   margin: 0 0 0 4px;
@@ -274,78 +277,117 @@ input:focus {
     var(--dark-grey) 0%, var(--dark-teal) 50%, var(--dark-grey) 100%);
 }
 
+.lockwidth {
+  width: 22ch;
+  min-width: 22ch;
+  max-width: 22ch;
+}
+
 .checkerboard {
+  border-radius: 0;
+  display: flex;
+  justify-content: flex-end;
   height: 100%;
   width: 100%;
+  min-width: 25ch;
   background-image: linear-gradient(45deg, var(--shadow-teal) 25%,
       transparent 25%, transparent 75%, var(--shadow-teal) 75%, var(--shadow-teal)),
     linear-gradient(45deg, var(--shadow-teal) 25%, transparent 25%,
       transparent 75%, var(--shadow-teal) 75%, var(--shadow-teal));
   background-size: 8px 8px;
   background-position: 0 0, 4px 4px;
+  box-shadow: 0.5ch 0 1ch var(--mid-grey),
+  0.6ch 0 0 var(--dark-grey),
+  0.8ch 0 0 var(--light-brown),
+  3.1ch 0 0.4ch var(--dark-brown),
+  3.2ch 0 0.1ch var(--light-brown),
+  4ch 1ch 4ch var(--shadow);
+  overflow-y: scroll;
 }
-
-#playbackcontrols {
-  position: fixed;
-  display: flex;
-  left: 35vw;
-  bottom: 0;
-  max-width: 55vw;
-  padding: 1ch 2ch;
-  border-radius: 0.25em 0.25em 0 0;
-  background-color: var(--light-teal);
-  border: medium solid var(--dark-teal);
-  border-bottom: 0;
-  box-shadow: inset 0 -1ch 2ch var(--light-teal),
-    inset 0 -2ch var(--dark-teal),
-    inset -0.4ch -2.3ch 1.2ch var(--light-grey),
-    0.5ch 2ch 2ch var(--shadow),
-    -0.5ch 2ch 2ch var(--shadow);
+.checkerboard::-webkit-scrollbar {
+  background-color: var(--light-brown);
+  width: 2.5ch;
 }
-#playbackcontrols > button {
-  width: 6.5ch;
-  height: 8ch;
-  margin: 1px;
-  background-color: var(--button-colour);
-  border: medium groove var(--button-colour);
-  box-shadow: inset 0 -1ch var(--light-grey),
-    inset 0 -1.1ch var(--mid-grey),
-    0 0 1ch var(--shadow-teal),
-    0 0 0.5ch var(--dark-grey);
+.checkerboard::-webkit-scrollbar-track {
+  border: medium inset var(--light-brown);
+  background-color: var(--light-brown);
+  width: 2ch;
 }
-#playbackcontrols > button:hover {
-  box-shadow: inset -0.2ch 0.2ch 1ch var(--highlight),
-    inset 0.2ch 0 1ch var(--highlight),
-    inset 0 -1ch var(--light-grey),
-    inset 0 -1.1ch var(--mid-grey),
-    0 0 1ch var(--shadow-teal),
-    0 0 0.5ch var(--dark-grey);
-}
-#playbackcontrols > button:active {
-  background-color: var(--button-colour);
-  border: medium inset var(--button-colour);
-  box-shadow: inset -0.4ch 0.4ch 1ch var(--mid-grey),
-    inset 0 -0.2ch var(--light-grey),
-    inset 0 -0.3ch var(--mid-grey),
-    0 0 1ch var(--shadow-teal),
-    0 0 0.5ch var(--dark-grey);
-}
-#playbackcontrols > button > svg {
-  border-radius: 0;
-  margin: auto;
-}
-
-#rsarea {
-  flex: 2 3 auto;
-  background: linear-gradient(var(--bg-top), var(--bg-bottom));
-  border-radius: 0;
-  border: 0;
-  height: 100vh;
+.checkerboard::-webkit-scrollbar-button,
+.checkerboard::-webkit-scrollbar-thumb,
+.checkerboard::-webkit-scrollbar-corner {
+  border: medium outset var(--light-brown);
+  background-color: var(--mid-brown);
 }
 
 .globaloptions {
+  max-width: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: Orbitron, monospace;
+  font-family: "Fira Mono", monospace;
+  font-size: 0.8em;
+  background-color: var(--dark-grey);
+  padding: 0.5ch 1ch;
+  margin: 1ch auto;
+  border: 0.07em inset var(--pink-grey);
+}
+.displayholder {
+  align-content: flex-start;
+  flex: 0 1 auto;
+  border-radius: 0;
+  width: 60%;
+  min-width: 22ch;
+  max-width: 25ch;
+  background-color: var(--dark-teal);
+  padding-top: 1.5ch;
+  box-shadow: inset 0 0 2ch var(--light-teal),
+    inset 1.8em 0 0 var(--mid-teal),
+    inset 1.9em 0 0 var(--shadow-teal),
+    inset 2em 0 0 var(--mid-grey),
+    inset 2.3em 0 0.5em var(--shadow-teal),
+    inset -1.8em 0 0 var(--mid-teal),
+    inset -1.9em 0 0 var(--shadow-teal),
+    inset -2em 0 0 var(--mid-grey),
+    inset -2.3em 0 0.5em var(--shadow-teal),
+    0.2ch 0 0.2ch var(--light-grey),
+    0.1ch 0 0 var(--dark-grey),
+    -0.2ch 0 0 var(--shadow-teal),
+    -0.4ch 0 0 var(--light-brown),
+    -0.6ch 0 0 var(--shadow-teal);
+}
+#codeoutput {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  padding: 1ch;
+}
+#codeoutput > textarea {
+  margin: auto;
+  background-color: var(--dark-grey);
+  color: var(--light-grey);
+  border: inset medium var(--pink-grey);
+  font-family: "Fira Mono", monospace;
+}
+.code-buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 19ch;
+  flex-wrap: wrap;
+}
+.code-button {
+  flex: 2 1 auto;
+  width: 50%;
+}
+#display button {
+  background-color: var(--dark-grey);
+  color: var(--light-grey);
+  border: outset medium var(--mid-grey);
+}
+label {
+  align-items: center;
+  text-align: center;
+  margin: 0.2em 0;
 }

@@ -1,0 +1,17 @@
+:root {
+  --bg-top: #427b52;
+  --bg-bottom: #5d743e;
+  --screen-black: #03120d;
+}
+
+#rsarea {
+  flex: 2 3 auto;
+  background: linear-gradient(var(--bg-top), var(--bg-bottom));
+  border-radius: 0;
+  border: 0;
+  height: 100vh;
+}
+
+#redshiftscreen {
+  background-color: var(--screen-black);
+}
