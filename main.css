@@ -68,22 +68,27 @@ button {
   flex: 0 0 auto;
 }
 
+#exacode::-webkit-scrollbar,
 #patterneditor::-webkit-scrollbar {
-  width: 1.6em;
+  width: 2.5ch;
 }
+#exacode::-webkit-scrollbar-track,
 #patterneditor::-webkit-scrollbar-track {
   background-color: var(--dark-teal);
   border-left: thick inset var(--mid-teal);
   border-right: thick inset var(--shadow-teal);
 }
+#exacode::-webkit-scrollbar-button,
 #patterneditor::-webkit-scrollbar-button {
   background-color: var(--light-teal);
   border: medium outset var(--light-teal);
 }
+#exacode::-webkit-scrollbar-thumb,
 #patterneditor::-webkit-scrollbar-thumb {
   background-color: var(--light-teal);
   border: medium outset var(--light-teal);
 }
+#exacode::-webkit-scrollbar-corner,
 #patterneditor::-webkit-scrollbar-corner {
   background-color: var(--light-teal);
   border: medium outset var(--light-teal);
@@ -278,9 +283,9 @@ input:focus {
 }
 
 .lockwidth {
-  width: 22ch;
-  min-width: 22ch;
-  max-width: 22ch;
+  width: 24.5ch;
+  min-width: 24.5ch;
+  max-width: 24.5ch;
 }
 
 .checkerboard {

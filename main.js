@@ -35,8 +35,12 @@ class Song {
     this.container.classList.add('songcontainer')
     this.elem.appendChild(this.container)
     if (songData) {
-      for (let d of songData.notes) {
-        this.addPattern(d)
+      if (songData.data) {
+
+      } else if (songData.notes) {
+        for (let d of songData.notes) {
+          this.addPattern(d)
+        }
       }
       this.title.textContent = songData.title
     } else {
@@ -55,8 +59,9 @@ class Song {
     return this._pattern
   }
   set playheadPattern (p) {
-    if (document.querySelector('.row.current'))
+    if (document.querySelector('.row.current')) {
       document.querySelector('.row.current').classList.remove('current')
+    }
     this._pattern = p
     this.patterns[p].rows[this._row].elem.classList.add('current')
   }
@@ -112,7 +117,51 @@ class Song {
     return this.patterns.map(pattern => pattern.toData())
   }
   toExacode () {
-    
+    let data = this.toData().reduce((acc, val) => acc.concat(val), []),
+      isEmpty = rowData => rowData.every(d => d === ''),
+      el = document.getElementById('exacode'),
+      instructions = [],
+      waitLength = 1,
+      code = ''
+
+    if (isEmpty(data[0])) instructions.push('0')
+    for (let row of data) {
+      if (isEmpty(row)) {
+        waitLength += 1
+      } else {
+        if (row !== data[0]) {
+          instructions.push(waitLength + '')
+          waitLength = 1
+        }
+        for (let i = 0; i < row.length; i++) {
+          if (row[i] !== '') {
+            instructions.push(i + 1 + '')
+            instructions.push(row[i])
+          }
+        }
+        instructions.push('0')
+      }
+    }
+    instructions.push(waitLength + '')
+
+    while (instructions.length) {
+      let charLength = 5,
+        instSet = ['DATA']
+      while ((charLength + instructions[0].length + 1) <= 22) {
+        charLength += instructions[0].length + 1
+        instSet.push(instructions.shift())
+        if (instructions.length === 0) {
+          break
+        }
+      }
+      code = code.concat(instSet.join(' ')).concat('\n')
+    }
+    el.value = code + this.basecode()
+  }
+  basecode (loop = true) {
+    return 'LINK 801\nMARK NEWNOTE\n' +
+      (loop ? 'TEST EOF\nFJMP CONTINUE\nSEEK -9999\nMARK CONTINUE\n' : '') +
+      'COPY F T\nFJMP WAITLOOP\nSUBI T 1 T\nFJMP SQR0\nSUBI T 1 T\nFJMP SQR1\nSUBI T 1 T\nFJMP TRI0\nMARK NSE0\nCOPY F #NSE0\nJUMP NEWNOTE\nMARK TRI0\nCOPY F #TRI0\nJUMP NEWNOTE\nMARK SQR1\nCOPY F #SQR1\nJUMP NEWNOTE\nMARK SQR0\nCOPY F #SQR0\nJUMP NEWNOTE\nMARK WAITLOOP\nCOPY F T\nMARK KEEPWAITING\nSUBI T 1 T\nWAIT\nTJMP KEEPWAITING\nJUMP NEWNOTE'
   }
 }
 
@@ -224,7 +273,7 @@ class Pattern {
       this.container.removeChild(this.container.lastChild)
     }
     while (length > this.rows.length) {
-      this.container.appendChild((new Row(undefined,this)).elem)
+      this.container.appendChild((new Row(undefined, this)).elem)
     }
   }
   minimize () {
@@ -348,8 +397,7 @@ class Cell {
     return ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-']
   }
   play (instrument) {
-    if (this.value > 0) { instrument.play(this.value) }
-    else if (this.value === '0') { instrument.stop() }
+    if (this.value > 0) { instrument.play(this.value) } else if (this.value === '0') { instrument.stop() }
   }
   toString () {
     switch (this.value) {
@@ -421,18 +469,23 @@ const audio = new (window.AudioContext || window.webkitAudioContext)(),
   masterGain = new GainNode(audio, { gain: 0.5 })
 masterGain.connect(audio.destination)
 
-let urlparams = (new URL(document.location)).searchParams
+let urlparams = new URL(document.location).searchParams,
+  title = urlparams.get('title'),
+  data = urlparams.get('data')
 
-var song = new Song(masterGain, {
+var song = new Song(masterGain, urlparams.search ? {
+  title: title,
+  data: data
+} : {
   title: 'MY SONG',
   notes: [
-    [[62, 65, 69, 60],
+    [[62, 65, 69, 40],
     ['', '', '', '0'],
-    ['', '', '', 60],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['0', '0', '0', 90],
     ['', '', '', '0'],
-    ['0', '0', '0', 60],
-    ['', '', '', '0'],
-    ['', '', '', 60],
+    ['', '', '', 90],
     ['', '', '', '0']]
   ]})
 
@@ -445,3 +498,6 @@ document.getElementById('masterGain').addEventListener('dblclick', e => {
   masterGain.gain.value = 0.5
   e.target.value = 0.5
 })
+function copyExacode () {
+  navigator.clipboard.writeText(document.getElementById('exacode').value)
+}

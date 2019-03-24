@@ -18,10 +18,10 @@
         <div class="checkerboard">
           <div class="displayholder">
             <div id="codeoutput">
-              <textarea rows="8" cols="22" class="lockwidth"></textarea>
+              <textarea id="exacode" rows="8" cols="22" class="lockwidth" spellcheck="false"></textarea>
               <div class="code-buttons">
-                <button class="code-button">Generate</button>
-                <button class="code-button">Copy</button>
+                <button class="code-button" onclick="song.toExacode()">Generate</button>
+                <button class="code-button" onclick="copyExacode()">Copy</button>
               </div>
             </div>
             <div class="globaloptions">
