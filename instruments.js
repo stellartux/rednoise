@@ -32,17 +32,16 @@ class NoiseInstrument {
     }
     this.filter = new BiquadFilterNode(this.context, { type: 'bandpass' })
     this.waveshaper = new WaveShaperNode(this.context, {
-      curve: Float32Array.from([1, 1, 0.3, 0, -0.3, -1, -1])
+      curve: Float32Array.from([1, 0.8, 0.3, 0, -0.3, -0.8, -1])
     })
     this.compressor = new DynamicsCompressorNode(this.context, {
-      knee: 2,
+      attack: 0.18,
+      knee: 0,
       ratio: 20,
       release: 0.1,
       threshold: -40
     })
-    this.gain = new GainNode(this.context, { gain: 2 })
     this.filter.connect(this.compressor)
-      .connect(this.gain)
       .connect(this.waveshaper)
       .connect(this.target)
   }
