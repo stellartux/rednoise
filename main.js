@@ -31,8 +31,9 @@ class Song {
     }
     if (songData) {
       if (songData.data) {
-
-      } else if (songData.notes) {
+        songData.notes = this.fromSaveData(songData.data)
+      }
+      if (songData.notes) {
         for (let d of songData.notes) {
           this.addPattern(d)
         }
@@ -42,11 +43,6 @@ class Song {
       this.addPattern()
     }
     this.patterns[0].rows[0].elem.classList.add('current')
-    this.addPatternButton = document.createElement('button')
-    this.addPatternButton.classList.add('addpatternbutton')
-    this.addPatternButton.textContent = 'CREATE NEW PATTERN'
-    this.addPatternButton.addEventListener('click', () => this.addPattern())
-    this.elem.appendChild(this.addPatternButton)
     this._pattern = 0
     this._row = 0
 
@@ -78,8 +74,7 @@ class Song {
     })
   }
   focus (offset) {
-    let currentCell = document.querySelector('.cell.current'),
-      isLastPattern = currentCell.owner.parent.elem.isLastChild
+    let currentCell = document.querySelector('.cell.current')
     if (currentCell) {
       let patternIndex = currentCell.owner.parent.parent.index
       patternIndex += this.patterns.length + offset
@@ -168,7 +163,6 @@ class Song {
   toExacode () {
     let data = this.toData().reduce((acc, val) => acc.concat(val), []),
       isEmpty = rowData => rowData.every(d => d === ''),
-      el = $('exacode'),
       instructions = [],
       waitLength = 1,
       code = ''
@@ -208,7 +202,7 @@ class Song {
       code = code.concat(instSet.join(' ')).concat('\n')
     }
     code += this.basecode($('loopforever').checked)
-    el.value = code
+    $('exacode').value = code
   }
   basecode (loop = true) {
     return 'LINK 801\nMARK NEWNOTE\n' +
@@ -216,13 +210,20 @@ class Song {
       'COPY F T\nFJMP WAITLOOP\nSUBI T 1 T\nFJMP SQR0\nSUBI T 1 T\nFJMP SQR1\nSUBI T 1 T\nFJMP TRI0\nMARK NSE0\nCOPY F #NSE0\nJUMP NEWNOTE\nMARK TRI0\nCOPY F #TRI0\nJUMP NEWNOTE\nMARK SQR1\nCOPY F #SQR1\nJUMP NEWNOTE\nMARK SQR0\nCOPY F #SQR0\nJUMP NEWNOTE\nMARK WAITLOOP\nCOPY F T\nMARK KEEPWAITING\nSUBI T 1 T\nWAIT\nTJMP KEEPWAITING\nJUMP NEWNOTE'
   }
   toSaveData () {
-    let saveData = ''
-    for (let p of this.toData()) {
-      saveData += p.join('')
-      saveData += 'p'
-    }
-    saveData = saveData.slice(0, -1)
-    return saveData
+    return window.btoa(JSON.stringify(this.toData())
+      .replace(/\["","","",""\]/g, 'E')
+      .replace(/\["","","","0"\]/g, 'D'))
+  }
+  fromSaveData (dataString) {
+    return JSON.parse(window.atob(dataString)
+      .replace(/E/g, '["","","",""]')
+      .replace(/D/g, '["","","","0"]'))
+  }
+  toURL () {
+    let url = new URL(document.location)
+    url.searchParams.set('title', this.title.textContent)
+    url.searchParams.set('data', this.toSaveData())
+    return url.toString()
   }
 }
 
@@ -318,12 +319,10 @@ class Pattern {
     })
   }
   focus (offset) {
-    offset|=0
+    offset |= 0
     let currentRow = document.querySelector('.cell.current').owner.parent
-    console.log(currentRow.index, offset, this.length);
     let rowIndex = (currentRow.index + offset + this.length) % this.length
     let cellIndex = document.querySelector('.cell.current').owner.index
-    console.log(currentRow, rowIndex, cellIndex)
     this.rows[rowIndex].cells[cellIndex].elem.focus()
   }
   get index () {
@@ -509,44 +508,44 @@ let urlparams = new URL(document.location).searchParams,
   title = urlparams.get('title'),
   data = urlparams.get('data')
 
-var song = new Song(masterGain, urlparams.search ? {
+var song = new Song(masterGain, data ? {
   title: title,
   data: data
 } : {
   title: 'MY SONG',
   notes: [[
-    ["50", "38", "62", "45"],
-     ["", "", "", ""],
-   ["", "", "", "0"],
-   ["", "", "", ""],
-   ["53", "0", "", "98"],
-   ["", "", "", "0"],
-   ["", "", "", "98"],
-   ["", "", "", "0"],
-   ["57", "38", "", "60"],
-   ["", "", "", ""],
-     ["", "", "", "0"],
-     ["", "", "", ""],
-     ["62", "0", "0", ""],
-     ["", "", "", ""],
-     ["", "", "", ""],
-     ["", "", "", ""],
-     ["65", "", "", "45"],
-     ["", "", "", ""],
-     ["", "", "", "0"],
-     ["", "", "", ""],
-     ["69", "", "", "98"],
-     ["", "", "", "0"],
-     ["", "", "", ""],
-     ["", "", "", ""],
-     ["72", "36", "74", "60"],
-     ["", "", "", ""],
-     ["", "0", "72", "0"],
-     ["", "", "", ""],
-     ["62", "", "69", ""],
-     ["", "", "", ""],
-     ["", "", "65", "59"],
-     ["", "", "", "0"]
+    ['50', '38', '62', '45'],
+    ['', '', '', ''],
+    ['', '', '', '0'],
+    ['', '', '', ''],
+    ['53', '0', '', '98'],
+    ['', '', '', '0'],
+    ['', '', '', '98'],
+    ['', '', '', '0'],
+    ['57', '38', '', '60'],
+    ['', '', '', ''],
+    ['', '', '', '0'],
+    ['', '', '', ''],
+    ['62', '0', '0', ''],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['65', '', '', '45'],
+    ['', '', '', ''],
+    ['', '', '', '0'],
+    ['', '', '', ''],
+    ['69', '', '', '98'],
+    ['', '', '', '0'],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['72', '36', '74', '60'],
+    ['', '', '', ''],
+    ['', '0', '72', '0'],
+    ['', '', '', ''],
+    ['62', '', '69', ''],
+    ['', '', '', ''],
+    ['', '', '65', '59'],
+    ['', '', '', '0']
   ]]})
 
 const redshiftScreen = new RedshiftScreen($('redshiftscreen'), song.analysers)
