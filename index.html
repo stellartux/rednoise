@@ -8,11 +8,16 @@
     <link rel="stylesheet" href="redshift.css">
     <link rel="stylesheet" href="playbackcontrols.css">
     <link rel="shortcut icon" href="favicon.png">
+    <script src="instruments.js" charset="utf-8"></script>
+    <script src="redshift.js" charset="utf-8"></script>
   </head>
   <body>
     <main>
       <div id="patterneditor">
-        <div id="song"></div>
+        <div id="song">
+          <div id="songtitle" contenteditable="true">NEW TITLE</div>
+          <div id="songcontainer"></div>
+        </div>
       </div>
       <div id="display">
         <div class="checkerboard">
@@ -37,7 +42,9 @@
       </div>
       <div id="rsarea">
         <div id="redshift">
-          <canvas id="canvas" width="200" height="300"></canvas>
+          <canvas id="redshiftscreen" width="240" height="200"></canvas>
+          <svg id="redshiftbuttons" viewBox="0 0 240 200">
+          </svg>
         </div>
       </div>
       <div id="playbackcontrols">

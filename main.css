@@ -114,13 +114,13 @@ button {
 .row.current {
   background-color: var(--mid-grey);
 }
-.songcontainer {
+#songcontainer {
   background-color: black;
   border-radius: 0.5em;
   padding: 0.1em;
   counter-reset: patterns;
 }
-.songtitle {
+#songtitle {
   border: 0.4em solid black;
   text-align: center;
   margin: 1ch 0 1ch 0;
@@ -135,7 +135,7 @@ button {
   font-family: "Roboto Condensed", sans-serif;
   font-style: italic;
   font-weight: 700;
-  margin: 1em 0 6em 0;
+  margin: 1em 0 10em 0;
   padding: 0.5em;
   background-color: var(--dark-grey);
   color: var(--light-grey);
@@ -307,20 +307,19 @@ input:focus {
   3.1ch 0 0.4ch var(--dark-brown),
   3.2ch 0 0.1ch var(--light-brown),
   4ch 1ch 4ch var(--shadow);
-  overflow-y: scroll;
 }
-.checkerboard::-webkit-scrollbar {
+.displayholder::-webkit-scrollbar {
   background-color: var(--light-brown);
   width: 2.5ch;
 }
-.checkerboard::-webkit-scrollbar-track {
+.displayholder::-webkit-scrollbar-track {
   border: medium inset var(--light-brown);
   background-color: var(--light-brown);
   width: 2ch;
 }
-.checkerboard::-webkit-scrollbar-button,
-.checkerboard::-webkit-scrollbar-thumb,
-.checkerboard::-webkit-scrollbar-corner {
+.displayholder::-webkit-scrollbar-button,
+.displayholder::-webkit-scrollbar-thumb,
+.displayholder::-webkit-scrollbar-corner {
   border: medium outset var(--light-brown);
   background-color: var(--mid-brown);
 }
@@ -341,24 +340,26 @@ input:focus {
   flex: 0 1 auto;
   border-radius: 0;
   width: 60%;
-  min-width: 24ch;
+  min-width: 27ch;
   max-width: 27ch;
   background-color: var(--dark-teal);
   padding-top: 1.5ch;
+  padding-bottom: 12ch;
   box-shadow: inset 0 0 2ch var(--light-teal),
     inset 1.8em 0 0 var(--mid-teal),
     inset 1.9em 0 0 var(--shadow-teal),
     inset 2em 0 0 var(--mid-grey),
     inset 2.3em 0 0.5em var(--shadow-teal),
-    inset -1.8em 0 0 var(--mid-teal),
-    inset -1.9em 0 0 var(--shadow-teal),
-    inset -2em 0 0 var(--mid-grey),
-    inset -2.3em 0 0.5em var(--shadow-teal),
+    inset -3.6em 0 0 var(--mid-teal),
+    inset -3.7em 0 0 var(--shadow-teal),
+    inset -3.8em 0 0 var(--mid-grey),
+    inset -4.1em 0 0.5em var(--shadow-teal),
     0.2ch 0 0.2ch var(--light-grey),
     0.1ch 0 0 var(--dark-grey),
     -0.2ch 0 0 var(--shadow-teal),
     -0.4ch 0 0 var(--light-brown),
     -0.6ch 0 0 var(--shadow-teal);
+  overflow-y: scroll;
 }
 #codeoutput {
   display: flex;
@@ -398,6 +399,11 @@ input:focus {
   background-color: var(--dark-grey);
   color: var(--light-grey);
   border: outset medium var(--mid-grey);
+}
+#display button:active {
+  background-color: var(--mid-grey);
+  color: var(--highlight);
+  border: inset medium var(--mid-grey);
 }
 label {
   align-items: center;

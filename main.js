@@ -4,6 +4,7 @@ const keyboardKeymap = { '0': 27, '2': 13, '3': 15, '5': 18, '6': 20, '7': 22,
   'y': 21, 'u': 23, 'i': 24, 'o': 26, 'p': 28, '[': 29, ']': 31, 's': 1,
   'd': 3, 'g': 6, 'h': 8, 'j': 10, 'l': 13, ';': 15, '=': 30 }
 const midiToFrequency = n => 13.75 * 2 ** ((n - 9) / 12)
+const $ = x => document.getElementById(x)
 
 class Song {
   constructor (target, songData) {
@@ -21,19 +22,13 @@ class Song {
     }
     this.instruments.push(new NoiseInstrument(this.analysers[3]))
 
-    this.elem = document.getElementById('song')
+    this.elem = $('song')
     this.elem.owner = this
-    while (this.elem.lastChild) {
-      this.elem.removeChild(this.elem.lastChild)
+    this.container = $('songcontainer')
+    this.title = $('songtitle')
+    while (this.container.lastChild) {
+      this.container.removeChild(this.container.lastChild)
     }
-    this.title = document.createElement('div')
-    this.title.classList.add('songtitle')
-    this.title.textContent = 'NEW SONG'
-    this.title.setAttribute('contenteditable', true)
-    this.elem.appendChild(this.title)
-    this.container = document.createElement('div')
-    this.container.classList.add('songcontainer')
-    this.elem.appendChild(this.container)
     if (songData) {
       if (songData.data) {
 
@@ -59,13 +54,14 @@ class Song {
       if ((ev.key === 'ArrowUp' && ev.ctrlKey) || ev.key === 'PageUp') {
         this.focus(-1)
         ev.preventDefault()
-      } else if ((ev.key === 'ArrowDown' && ev.ctrlKey) || ev.key === 'PageDown') {
+      } else if (ev.key === 'ArrowDown' && ev.ctrlKey || ev.key === 'PageDown') {
         this.focus(1)
         ev.preventDefault()
       } else if (ev.key === 'Space' && ev.ctrlKey) {
         this.pause()
         this.stop()
         this.reset()
+        ev.preventDefault()
       } else if (ev.code === 'Space') {
         if (this.isPlaying) {
           this.pause()
@@ -73,11 +69,26 @@ class Song {
         } else {
           this.play()
         }
+        ev.preventDefault()
       } else if (ev.key === 'Enter' && ev.target.localName !== 'input') {
         this.pause()
         this.step()
+        ev.preventDefault()
       }
     })
+  }
+  focus (offset) {
+    let currentCell = document.querySelector('.cell.current'),
+      isLastPattern = currentCell.owner.parent.elem.isLastChild
+    if (currentCell) {
+      let patternIndex = currentCell.owner.parent.parent.index
+      patternIndex += this.patterns.length + offset
+      patternIndex %= this.patterns.length
+      let rowIndex = currentCell.owner.parent.index
+      rowIndex %= this.patterns[patternIndex].rows.length
+      let cellIndex = currentCell.owner.index
+      this.patterns[patternIndex].rows[rowIndex].cells[cellIndex].elem.focus()
+    }
   }
   get playheadPattern () {
     return this._pattern
@@ -96,11 +107,11 @@ class Song {
     if (document.querySelector('.row.current')) {
       document.querySelector('.row.current').classList.remove('current')
     }
-    this._row = r
+    this._row = r % this.patterns[this.playheadPattern].length
     this.patterns[this._pattern].rows[r].elem.classList.add('current')
   }
   get focusFollowsPlayhead () {
-    return document.getElementById('focusPlayhead').checked
+    return $('focusPlayhead').checked
   }
   addPattern (data, previousSibling) {
     let pattern = new Pattern(data, this)
@@ -157,11 +168,11 @@ class Song {
   toExacode () {
     let data = this.toData().reduce((acc, val) => acc.concat(val), []),
       isEmpty = rowData => rowData.every(d => d === ''),
-      el = document.getElementById('exacode'),
+      el = $('exacode'),
       instructions = [],
       waitLength = 1,
       code = ''
-    if (!document.getElementById('loopforever').checked) {
+    if (!$('loopforever').checked) {
       data.push(['0', '0', '0', '0'])
     }
     if (isEmpty(data[0])) instructions.push('0')
@@ -196,13 +207,22 @@ class Song {
       }
       code = code.concat(instSet.join(' ')).concat('\n')
     }
-    code += this.basecode(document.getElementById('loopforever').checked)
+    code += this.basecode($('loopforever').checked)
     el.value = code
   }
   basecode (loop = true) {
     return 'LINK 801\nMARK NEWNOTE\n' +
       (loop ? 'TEST EOF\nFJMP CONTINUE\nSEEK -9999\nMARK CONTINUE\n' : '') +
       'COPY F T\nFJMP WAITLOOP\nSUBI T 1 T\nFJMP SQR0\nSUBI T 1 T\nFJMP SQR1\nSUBI T 1 T\nFJMP TRI0\nMARK NSE0\nCOPY F #NSE0\nJUMP NEWNOTE\nMARK TRI0\nCOPY F #TRI0\nJUMP NEWNOTE\nMARK SQR1\nCOPY F #SQR1\nJUMP NEWNOTE\nMARK SQR0\nCOPY F #SQR0\nJUMP NEWNOTE\nMARK WAITLOOP\nCOPY F T\nMARK KEEPWAITING\nSUBI T 1 T\nWAIT\nTJMP KEEPWAITING\nJUMP NEWNOTE'
+  }
+  toSaveData () {
+    let saveData = ''
+    for (let p of this.toData()) {
+      saveData += p.join('')
+      saveData += 'p'
+    }
+    saveData = saveData.slice(0, -1)
+    return saveData
   }
 }
 
@@ -259,10 +279,10 @@ class Pattern {
     this.patternbody.appendChild(this.container)
     this.container.addEventListener('keydown', ev => {
       if (ev.key === 'ArrowUp') {
-        this.focus(-1)
+        this.focus(-$('lineSkip').value)
         ev.preventDefault()
       } else if (ev.key === 'ArrowDown') {
-        this.focus(1)
+        this.focus($('lineSkip').value)
         ev.preventDefault()
       }
     })
@@ -297,10 +317,13 @@ class Pattern {
       }
     })
   }
-  focus (newIndex) {
+  focus (offset) {
+    offset|=0
     let currentRow = document.querySelector('.cell.current').owner.parent
-    let rowIndex = (currentRow.index + newIndex + this.length) % this.length
+    console.log(currentRow.index, offset, this.length);
+    let rowIndex = (currentRow.index + offset + this.length) % this.length
     let cellIndex = document.querySelector('.cell.current').owner.index
+    console.log(currentRow, rowIndex, cellIndex)
     this.rows[rowIndex].cells[cellIndex].elem.focus()
   }
   get index () {
@@ -332,7 +355,6 @@ class Pattern {
       this.parent.playheadPattern = 0
     }
     const isOnlyChild = this.elem.previousSibling === this.elem.nextSibling
-    song.patterns.splice(song.patterns.indexOf(this))
     this.elem.parentNode.removeChild(this.elem)
     if (isOnlyChild) {
       song.addPattern()
@@ -387,6 +409,9 @@ class Row {
       this.cells[i].play(instruments[i])
     }
   }
+  remove () {
+    this.parent.container.removeChild(this.elem)
+  }
 }
 
 /** A single note value and its UI
@@ -406,17 +431,22 @@ class Cell {
         case 'CapsLock':
           this.value = '0'
           break
-        case 'Backspace':
         case 'Delete':
+          this.parent.parent.focus($('lineSkip').value)
           this.value = ''
+          break
+        case 'Backspace':
+          this.parent.parent.length += 1
+          this.parent.remove()
           break
         default:
           if (ev.key.toLowerCase() in keyboardKeymap) {
             let note = keyboardKeymap[ev.key.toLowerCase()]
-            note += document.getElementById('octave').value * 12
+            note += $('octave').value * 12
             if (note > 0) {
               this.value = note
             }
+            this.parent.parent.focus($('lineSkip').value)
           } else return // avoid preventDefault() for unhandled input
       }
       ev.preventDefault()
@@ -426,7 +456,6 @@ class Cell {
       if (this.song.focusFollowsPlayhead) {
         this.song.playheadPattern = this.parent.parent.index
         this.song.playheadRow = this.parent.index
-        this.parent.elem.classList.add('current')
       }
     })
     this.elem.addEventListener('blur', ev => {
@@ -470,68 +499,6 @@ class Cell {
   }
 }
 
-class Instrument {
-  constructor (target, type) {
-    this.type = type
-    this.context = target.context ? target.context : target
-    this.target = target.destination ? target.destination : target
-  }
-  play (pitch, time) {
-    if (this.note) this.stop(time)
-    this.note = new OscillatorNote(this.target,
-      { attack: 0.01, sustain: 0.4, triggerTime: time },
-      [{ frequency: midiToFrequency(pitch), type: this.type }])
-  }
-  release () {
-    if (this.note) this.note.releaseNote(time)
-    this.note = undefined
-  }
-  stop (time) {
-    if (this.note) this.note.stopNote(time)
-    this.note = undefined
-  }
-}
-
-class NoiseInstrument {
-  constructor (target = audio.destination) {
-    this.target = target
-    this.context = target.context ? target.context : target
-    this.buffer = this.context.createBuffer(1,
-      this.context.sampleRate * 8, this.context.sampleRate)
-    let data = this.buffer.getChannelData(0)
-    for (let i = 0; i < data.length; i++) {
-      data[i] = Math.random() * 2 - 1
-    }
-    this.filter = new BiquadFilterNode(this.context, { type: 'bandpass' })
-    this.waveshaper = new WaveShaperNode(this.context, {
-      curve: Float32Array.from([1, 1, 0.3, 0, -0.3, -1, -1])
-    })
-    this.compressor = new DynamicsCompressorNode(this.context, {
-      knee: 2,
-      ratio: 20,
-      release: 0.1,
-      threshold: -40
-    })
-    this.gain = new GainNode(this.context, { gain: 2 })
-    this.filter.connect(this.compressor)
-      .connect(this.gain)
-      .connect(this.waveshaper)
-      .connect(this.target)
-  }
-  play (pitch) {
-    if (this.source) this.source.stop()
-    this.filter.frequency.value = midiToFrequency(pitch)
-    this.source = this.context.createBufferSource()
-    this.source.buffer = this.buffer
-    this.source.connect(this.filter)
-    this.source.start()
-  }
-  stop () {
-    if (this.source) this.source.stop()
-    this.source = undefined
-  }
-}
-
 // Initialization
 
 const audio = new (window.AudioContext || window.webkitAudioContext)(),
@@ -547,20 +514,52 @@ var song = new Song(masterGain, urlparams.search ? {
   data: data
 } : {
   title: 'MY SONG',
-  notes: [
-    [['', '', '', 38],
-    ['', '', '', '0']]
-  ]})
+  notes: [[
+    ["50", "38", "62", "45"],
+     ["", "", "", ""],
+   ["", "", "", "0"],
+   ["", "", "", ""],
+   ["53", "0", "", "98"],
+   ["", "", "", "0"],
+   ["", "", "", "98"],
+   ["", "", "", "0"],
+   ["57", "38", "", "60"],
+   ["", "", "", ""],
+     ["", "", "", "0"],
+     ["", "", "", ""],
+     ["62", "0", "0", ""],
+     ["", "", "", ""],
+     ["", "", "", ""],
+     ["", "", "", ""],
+     ["65", "", "", "45"],
+     ["", "", "", ""],
+     ["", "", "", "0"],
+     ["", "", "", ""],
+     ["69", "", "", "98"],
+     ["", "", "", "0"],
+     ["", "", "", ""],
+     ["", "", "", ""],
+     ["72", "36", "74", "60"],
+     ["", "", "", ""],
+     ["", "0", "72", "0"],
+     ["", "", "", ""],
+     ["62", "", "69", ""],
+     ["", "", "", ""],
+     ["", "", "65", "59"],
+     ["", "", "", "0"]
+  ]]})
+
+const redshiftScreen = new RedshiftScreen($('redshiftscreen'), song.analysers)
 
 // Event handlers
 
-document.getElementById('masterGain').addEventListener('change', e => {
+$('masterGain').addEventListener('change', e => {
   masterGain.gain.value = e.target.value
 })
-document.getElementById('masterGain').addEventListener('dblclick', e => {
+$('masterGain').addEventListener('dblclick', e => {
   masterGain.gain.value = 0.5
   e.target.value = 0.5
 })
 function copyExacode () {
-  navigator.clipboard.writeText(document.getElementById('exacode').value)
+  navigator.clipboard.writeText($('exacode').value)
 }

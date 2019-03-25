@@ -2,14 +2,33 @@
   --bg-top: #427b52;
   --bg-bottom: #5d743e;
   --screen-black: #03120d;
+  --rs-body-mid: #2a251f;
+  --rs-red: #ad1718;
+  --rs-cyan: #0dbda3;
 }
 
 #rsarea {
   flex: 2 3 auto;
+  display: flex;
   background: linear-gradient(var(--bg-top), var(--bg-bottom));
   border-radius: 0;
   border: 0;
   height: 100vh;
+}
+
+#redshift {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: 5%;
+  min-width: 240px;
+  min-height: 400px;
+  background-color: var(--rs-body-mid);
+}
+
+#redshift * {
+  flex: 0 1 auto;
 }
 
 #redshiftscreen {
