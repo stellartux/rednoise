@@ -28,14 +28,14 @@ class NoiseInstrument {
       this.context.sampleRate * 8, this.context.sampleRate)
     let data = this.buffer.getChannelData(0)
     for (let i = 0; i < data.length; i++) {
-      data[i] = Math.random() * 2 - 1
+      data[i] = Math.random() * 0.28 - 0.14
     }
     this.filter = new BiquadFilterNode(this.context, { type: 'bandpass' })
     this.waveshaper = new WaveShaperNode(this.context, {
       curve: Float32Array.from([1, 0.8, 0.3, 0, -0.3, -0.8, -1])
     })
     this.compressor = new DynamicsCompressorNode(this.context, {
-      attack: 0.18,
+      attack: 0.15,
       knee: 0,
       ratio: 20,
       release: 0.1,

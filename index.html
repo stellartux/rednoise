@@ -42,11 +42,27 @@
         </div>
       </div>
       <div id="rsarea">
-        <div id="redshift">
-          <canvas id="redshiftscreen" width="240" height="200"></canvas>
-          <svg id="redshiftbuttons" viewBox="0 0 240 200">
-          </svg>
-        </div>
+      <div id="redshift">
+      <div class="rstop">
+      <svg width="22px" height="22px" id="led">
+      <circle cx="11" cy="13" r="7"
+        fill="var(--led-red)" stroke="var(--highlight)"
+        stroke-width="0.4"/>
+      <circle cx="11" cy="13" r="4"
+        fill="var(--led-pink)"/>
+      </svg>
+      <svg width="23px" height="22px" id="stripes">
+        <path d="M18 4 l-2 14 h4 l2 -14 Z" fill="var(--rs-cyan)"/>
+        <path d="M13 4 l-2 14 h4 l2 -14 Z" fill="var(--rs-white)"/>
+        <path d="M2 4 l5.2 1.5 l-2 13 h4 l2 -15 Z" fill="var(--rs-red)"/>
+      </svg>
+      <div class="logo">REDSHIFT</div>
+      </div>
+      <canvas id="redshiftscreen" width="240" height="200"></canvas>
+      <svg id="redshiftbuttons" viewBox="0 0 240 200">
+      </svg>
+      <div id="tec">TEC</div>
+      </div>
       </div>
       <div id="playbackcontrols">
         <button name="reset" onclick="song.reset()">

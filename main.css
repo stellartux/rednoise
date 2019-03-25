@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Orbitron|Fira+Mono|Exo:800i|Roboto+Condensed|Roboto+Mono');
+@import url('https://fonts.googleapis.com/css?family=Orbitron|Fira+Mono|Exo:800i|Roboto+Condensed|Roboto+Mono|Righteous');
 
 :root {
   --highlight: #dddddd;
@@ -325,7 +325,7 @@ input:focus {
 }
 
 .globaloptions {
-  max-width: 80%;
+  max-width: 25.5ch;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -383,7 +383,7 @@ input:focus {
   display: flex;
   flex-direction: row;
   width: 100%;
-  max-width: 19ch;
+  max-width: 22.5ch;
   flex-wrap: wrap;
 }
 .code-buttons > * {

@@ -2,13 +2,19 @@
   --bg-top: #427b52;
   --bg-bottom: #5d743e;
   --screen-black: #03120d;
+  --rs-body-dark: #1a1510;
   --rs-body-mid: #2a251f;
+  --rs-body-light: #443d35;
   --rs-red: #ad1718;
   --rs-cyan: #0dbda3;
+  --rs-white: #f3fcf5;
+  --dark-shadow: #000000b4;
+  --led-red: #e4264e;
+  --led-pink: #fbdbdd;
 }
 
 #rsarea {
-  flex: 2 3 auto;
+  flex: 2 5 auto;
   display: flex;
   background: linear-gradient(var(--bg-top), var(--bg-bottom));
   border-radius: 0;
@@ -17,20 +23,71 @@
 }
 
 #redshift {
-  flex: 0 0 auto;
+  flex: 0 0  auto;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   margin: auto;
-  padding: 5%;
-  min-width: 240px;
-  min-height: 400px;
-  background-color: var(--rs-body-mid);
+  padding: 10px 12px 4px;
+  width: 260px;
+  height: 440px;
+  background: linear-gradient(30deg, var(--rs-body-mid) 8%, transparent 9%),
+    linear-gradient(335deg, var(--rs-body-dark) 7%, transparent 8%),
+  linear-gradient(243deg, var(--rs-body-mid) 0%,
+    var(--rs-body-mid) 61%, var(--rs-body-light) 62%);
+  box-shadow: inset -1px 1px 4px var(--rs-body-mid),
+    inset 2px 2px 3px var(--highlight),
+    inset 4px 4px 10px var(--light-grey),
+    inset -3px 1px 2px var(--rs-body-light),
+    22px 18px 10px var(--dark-shadow),
+    -4px 15px 30px var(--shadow);
 }
 
+.rstop {
+  display: flex;
+  padding-bottom: 4px;
+}
+.logo {
+  color: var(--rs-white);
+  font-family: 'Exo', sans-serif;
+  font-size: 17px;
+  text-align: right;
+  align-items: center;
+  text-shadow: 1px 0 var(--rs-cyan),
+    -2px 0 var(--rs-red);
+  margin-bottom: 0px 0px 5px px;
+}
+#stripes {
+  margin-left: auto;
+}
 #redshift * {
   flex: 0 1 auto;
 }
 
 #redshiftscreen {
-  background-color: var(--screen-black);
+  background-color: var(--rs-body-mid);
+  padding: 5px;
+  border: thick groove var(--rs-body-light);
+  margin: 4px 8px 4px 8px;
+  border-radius: 15px;
+}
+
+#tec {
+  text-align: center;
+  text-shadow: none;
+  border-radius: 35%;
+  color: var(--rs-body-light);
+  background-color: var(--rs-body-mid);
+  padding: 0px 6px;
+  border: 1.5px inset var(--rs-body-mid);
+  margin: 0px auto;
+  font-family: serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 0.85em;
+}
+
+#redshift > svg {
+  flex: 1 1 auto;
+  min-height: 100px;
 }
