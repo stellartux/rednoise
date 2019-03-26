@@ -2,17 +2,17 @@
   --bg-top: #427b52;
   --bg-bottom: #5d743e;
   --screen-black: #03120d;
-  --rs-body-dark: #1a1510;
-  --rs-body-mid: #2a251f;
+  --rs-body-dark: #100a05;
+  --rs-body-mid: #241e18;
   --rs-body-light: #443d35;
-  --rs-red: #ad1718;
-  --rs-cyan: #0dbda3;
+  --rs-red: #a71718;
+  --rs-dark-red: #971718;
+  --rs-teal: #0dbda3;
   --rs-white: #f3fcf5;
   --dark-shadow: #000000b4;
-  --led-red: #e4264e;
-  --led-pink: #fbdbdd;
+  --led-red: #e4567e;
+  --led-pink: #ebd6dd;
 }
-
 #rsarea {
   flex: 2 5 auto;
   display: flex;
@@ -21,31 +21,30 @@
   border: 0;
   height: 100vh;
 }
-
 #redshift {
   flex: 0 0  auto;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   margin: auto;
-  padding: 10px 12px 4px;
+  padding: 8px 12px 6px;
   width: 260px;
   height: 440px;
-  background: linear-gradient(30deg, var(--rs-body-mid) 8%, transparent 9%),
-    linear-gradient(335deg, var(--rs-body-dark) 7%, transparent 8%),
-  linear-gradient(243deg, var(--rs-body-mid) 0%,
+  background: linear-gradient(28deg, var(--rs-body-mid) 7%, transparent 8%),
+    linear-gradient(332deg, var(--rs-body-dark) 7%, transparent 8%),
+  linear-gradient(245deg, var(--rs-body-mid) 0%,
     var(--rs-body-mid) 61%, var(--rs-body-light) 62%);
   box-shadow: inset -1px 1px 4px var(--rs-body-mid),
-    inset 2px 2px 3px var(--highlight),
-    inset 4px 4px 10px var(--light-grey),
+    inset 2px 3px 8px var(--rs-body-light),
     inset -3px 1px 2px var(--rs-body-light),
     22px 18px 10px var(--dark-shadow),
-    -4px 15px 30px var(--shadow);
+    -4px 9px 20px #22632288;
+  align-content: space-around;
+  justify-content: space-around;
 }
-
 .rstop {
   display: flex;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 .logo {
   color: var(--rs-white);
@@ -53,9 +52,9 @@
   font-size: 17px;
   text-align: right;
   align-items: center;
-  text-shadow: 1px 0 var(--rs-cyan),
+  text-shadow: 1px 0 var(--rs-teal),
     -2px 0 var(--rs-red);
-  margin-bottom: 0px 0px 5px px;
+  margin-bottom: 0px 0px 5px 5px;
 }
 #stripes {
   margin-left: auto;
@@ -63,31 +62,44 @@
 #redshift * {
   flex: 0 1 auto;
 }
-
-#redshiftscreen {
+.screenbox {
+  display: flex;
+  flex-direction: column;
   background-color: var(--rs-body-mid);
-  padding: 5px;
+  padding: 4px 2px;
+  padding-bottom: 0;
   border: thick groove var(--rs-body-light);
-  margin: 4px 8px 4px 8px;
+  margin: 0;
   border-radius: 15px;
+  align-items: center;
+  justify-content: center;
 }
-
+.subline {
+  font-family: 'Roboto Condensed';
+  font-size: 4pt;
+  text-align: right;
+  color: var(--rs-body-light);
+  padding-right: 4ch;
+  align-self: flex-end;
+}
 #tec {
   text-align: center;
   text-shadow: none;
   border-radius: 35%;
   color: var(--rs-body-light);
   background-color: var(--rs-body-mid);
-  padding: 0px 6px;
+  padding: 0 2px;
   border: 1.5px inset var(--rs-body-mid);
   margin: 0px auto;
   font-family: serif;
   font-style: italic;
   font-weight: 800;
-  font-size: 0.85em;
+  font-size: 0.75em;
 }
-
 #redshift > svg {
   flex: 1 1 auto;
   min-height: 100px;
+}
+#redshift text {
+  font-family: "Righteous", sans-serif;
 }

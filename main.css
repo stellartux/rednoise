@@ -18,7 +18,7 @@
   --light-red: #c80920;
   --button-colour: #868f9f;
   --dark-button: #5b637a;
-  --shadow: #00000080;
+  --shadow: #000000a0;
   --button-style: "fill:var(--dark-button);stroke:var(--mid-grey);stroke-width:4%";
 }
 

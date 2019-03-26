@@ -58,7 +58,7 @@ class Song {
         this.stop()
         this.reset()
         ev.preventDefault()
-      } else if (ev.code === 'Space') {
+      } else if (ev.code === 'Space' && !ev.ctrlKey) {
         if (this.isPlaying) {
           this.pause()
           this.stop()
@@ -279,10 +279,10 @@ class Pattern {
     this.elem.appendChild(this.patternbody)
     this.patternbody.appendChild(this.container)
     this.container.addEventListener('keydown', ev => {
-      if (ev.key === 'ArrowUp') {
+      if (ev.key === 'ArrowUp' && !ev.ctrlKey) {
         this.focus(-$('lineSkip').value)
         ev.preventDefault()
-      } else if (ev.key === 'ArrowDown') {
+      } else if (ev.key === 'ArrowDown' && !ev.ctrlKey) {
         this.focus($('lineSkip').value)
         ev.preventDefault()
       }
