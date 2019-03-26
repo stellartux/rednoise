@@ -123,7 +123,9 @@ class Song {
     return this.clearValue !== undefined
   }
   play () {
-    this.clearValue = window.setInterval(this.step.bind(this), 33)
+    if (!this.isPlaying) {
+      this.clearValue = window.setInterval(this.step.bind(this), 33)
+    }
   }
   pause () {
     if (this.clearValue) {
