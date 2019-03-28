@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'Righteous';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Righteous'), local('Righteous-Regular'), url(https://fonts.gstatic.com/s/righteous/v7/1cXxaUPXBpj2rGoU7C9WiHGF.woff2) format('woff2');
+  unicode-range: U+0032-0033, U+0041, U+0044, U+0052-0054, U+0058-0060;
+}
+@font-face {
+  font-family: 'Exo';
+  font-style: italic;
+  font-weight: 800;
+  src: local('Exo ExtraBold Italic'), local('Exo-ExtraBoldItalic'), url(https://fonts.gstatic.com/s/exo/v8/4UaBrEtFpBISdkYG9iLhx6g.woff2) format('woff2');
+  unicode-range: U+0044-0046, U+0048-0049, U+0052-0054;
+}
 :root {
   --bg-top: #427b52;
   --bg-bottom: #5d743e;
