@@ -572,3 +572,6 @@ $('masterGain').addEventListener('dblclick', e => {
 function copyExacode () {
   navigator.clipboard.writeText($('exacode').value)
 }
+function copyURL () {
+  navigator.clipboard.writeText($('linkoutput').href)
+}

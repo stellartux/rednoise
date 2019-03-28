@@ -221,10 +221,8 @@
       </div>
       <div id="urlpopup" class="hidden">
         <button id="closePopup" onclick="$('urlpopup').classList.add('hidden')">X</button>
-        <div>
-          Use the following link to reload your song.
-          <a id="linkoutput" href="#"></a>
-        </div>
+        <output><a id="linkoutput" href="#"></a></output>
+        <button id="copyURL" onclick="copyURL()">Copy URL</button>
       </div>
     </main>
     <script src="main.js" charset="utf-8"></script>

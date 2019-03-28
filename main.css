@@ -532,13 +532,16 @@ input[type="checkbox"]:checked:after {
   width: 3ch;
   height: 3ch;
 }
-#urlpopup > div {
+#urlpopup > output {
+  display: block;
   padding: 1ch;
-  word-wrap: break-word;
-  overflow: auto;
-  max-height: 16ch;
+  overflow: hidden;
+  max-height: 1em;
   padding-bottom: 3ch;
 }
-#urlpopup > div > a {
+#linkoutput, #linkout:visited {
   color: var(--pink-grey);
+}
+#copyURL {
+  padding: 0.4ch;
 }
