@@ -53,7 +53,7 @@ class Song {
       } else if (ev.key === 'ArrowDown' && ev.ctrlKey || ev.key === 'PageDown') {
         this.focus(1)
         ev.preventDefault()
-      } else if (ev.key === 'Space' && ev.ctrlKey) {
+      } else if (ev.code === 'Space' && ev.ctrlKey) {
         this.pause()
         this.stop()
         this.reset()
@@ -437,6 +437,7 @@ class Cell {
           this.value = ''
           break
         case 'Backspace':
+          this.parent.parent.focus(1)
           this.parent.parent.length += 1
           this.parent.remove()
           break
@@ -498,6 +499,13 @@ class Cell {
   toData () {
     return '' + this.value
   }
+}
+
+function saveSong () {
+  let url = song.toURL()
+  $('urlpopup').classList.remove('hidden')
+  $('linkoutput').innerText = url
+  $('linkoutput').href = url
 }
 
 // Initialization

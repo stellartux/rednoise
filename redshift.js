@@ -10,7 +10,6 @@ class RedshiftScreen {
       this.levelData.push(new Float32Array(this.canvas.width * 4).fill(0))
     }
     this.index = 0
-    this.levelHolder = new Float32Array(this.canvas.width * 4)
     this.context.fillStyle = '#03120d'
     window.requestAnimationFrame(this.draw.bind(this))
   }
