@@ -11,7 +11,7 @@ class RedshiftScreen {
     }
     this.index = 0
     this.context.fillStyle = '#03120d'
-    window.requestAnimationFrame(this.draw.bind(this))
+    this.animate = true
   }
   draw () {
     this.context.beginPath()
@@ -36,11 +36,22 @@ class RedshiftScreen {
     this.context.resetTransform()
 
     this.context.resetTransform()
-    window.requestAnimationFrame(this.draw.bind(this))
+    if (this.animate) {
+      window.requestAnimationFrame(this.draw.bind(this))
+    }
   }
   getLevels () {
     this.analysers.forEach((a, i) => {
       a.getFloatTimeDomainData(this.levelData[i])
     })
+  }
+  get animate () {
+    return this._animate
+  }
+  set animate (a) {
+    this._animate = a
+    if (a) {
+      window.requestAnimationFrame(this.draw.bind(this))
+    }
   }
 }

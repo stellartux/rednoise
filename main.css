@@ -454,7 +454,6 @@ input[type=range]::-moz-range-track {
   background: var(--light-brown);
   border-radius: 5px;
   border: 1px inset var(--highlight);
-  filter: url(#insetfilter);
 }
 input[type=range]::-moz-range-thumb {
   border: 2px outset var(--light-brown);
@@ -464,6 +463,7 @@ input[type=range]::-moz-range-thumb {
   background: var(--mid-brown);
   cursor: pointer;
   margin-top: -6px;
+  z-index: 1;
 }
 input[type="checkbox"] {
   -webkit-appearance: none;
