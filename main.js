@@ -431,6 +431,7 @@ class Cell {
       switch (ev.key) {
         case 'CapsLock':
           this.value = '0'
+          this.parent.parent.focus($('lineSkip').value)
           break
         case 'Delete':
           this.parent.parent.focus($('lineSkip').value)
