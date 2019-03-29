@@ -314,7 +314,6 @@ class Pattern {
     let lengthInput = document.createElement('input')
     lengthInput.setAttribute('type', 'number')
     lengthInput.setAttribute('min', '1')
-    lengthInput.setAttribute('max', '128')
     lengthInput.setAttribute('step', '1')
     lengthInput.setAttribute('value', this.length)
     lengthInput.addEventListener('change', ev => {
