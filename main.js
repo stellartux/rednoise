@@ -58,7 +58,15 @@ class Song {
         this.stop()
         this.reset()
         ev.preventDefault()
-      } else if (ev.code === 'Space' && !ev.ctrlKey) {
+      } else if (ev.code === 'Space' && ev.shiftKey) {
+        this.pause()
+        this.stop()
+        this.playheadRow = 0
+        if (this.focusFollowsPlayhead) {
+          this.patterns[this.playheadPattern].rows[0].cells[0].elem.focus()
+        }
+        ev.preventDefault()
+      } else if (ev.code === 'Space') {
         if (this.isPlaying) {
           this.pause()
           this.stop()

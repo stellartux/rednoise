@@ -38,8 +38,8 @@
             <div id="codeoutput">
               <textarea id="exacode" rows="8" cols="24" class="lockwidth" spellcheck="false"></textarea>
               <div class="code-buttons">
-                <button class="code-button" onclick="song.toExacode()">Generate</button>
-                <button class="code-button" onclick="copyExacode()">Copy</button>
+                <button onclick="song.toExacode()">Generate</button>
+                <button onclick="copyExacode()">Copy</button>
                 <label>Loop <input id="loopforever" type="checkbox" checked></label>
               </div>
             </div>
@@ -48,6 +48,7 @@
               <label>Line Skip <input id="lineSkip" type="number" value="1" min="0" step="1"></label>
               <label>Volume <input id="masterGain" type="range" value="0.5" min="0" max="1" step="0.01"></label>
               <label>Focus Playhead <input id="focusPlayhead" type="checkbox" checked></label>
+              <button onclick="$('infopopup').classList.remove('hidden')">Show Info</button>
             </div>
           </div>
         </div>
@@ -219,11 +220,26 @@
           </svg>
         </button>
       </div>
-      <div id="urlpopup" class="hidden">
-        <button id="closePopup" onclick="$('urlpopup').classList.add('hidden')">X</button>
-        <output><a id="linkoutput" href="#"></a></output>
-        <button id="copyURL" onclick="copyURL()">Copy URL</button>
-      </div>
+        <div id="urlpopup" class="hidden popup">
+          <button class="closepopup" onclick="this.parentElement.classList.add('hidden')">X</button>
+          <output><a id="linkoutput" href="#"></a></output>
+          <button id="copyURL" onclick="copyURL()">Copy URL</button>
+        </div>
+        <div id="infopopup" class="hidden popup">
+          <button class="closepopup" onclick="this.parentElement.classList.add('hidden')">X</button>
+          <p>Keyboard controls</p>
+          <ul>
+            <li>Notes are laid out like a piano starting from Z (C4) and Q (C5)</li>
+            <li>CapsLock to enter a note off command</li>
+            <li>Use the arrow keys to move the focus around the pattern</li>
+            <li>Ctrl+ArrowUp/ArrowDown or PageUp/PageDown to move between patterns</li>
+            <li>Space to play/pause</li>
+            <li>Enter to step</li>
+            <li>Ctrl+Space to go to the start of the song</li>
+            <li>Shift+Space to go to the start of the pattern</li>
+          </ul>
+          <p><a href="https://www.github.com/stellartux/rednoise" target="_blank">Source Code</a></p>
+        </div>
     </main>
     <script src="main.js" charset="utf-8"></script>
   </body>
