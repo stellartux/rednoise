@@ -570,7 +570,7 @@ const redshiftScreen = new RedshiftScreen($('redshiftscreen'), song.analysers)
 
 // Event handlers
 
-$('masterGain').addEventListener('change', e => {
+$('masterGain').addEventListener('input', e => {
   masterGain.gain.value = e.target.value
 })
 $('masterGain').addEventListener('dblclick', e => {
