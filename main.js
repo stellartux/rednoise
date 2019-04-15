@@ -290,10 +290,10 @@ class Pattern {
     this.patternbody.appendChild(this.container)
     this.container.addEventListener('keydown', ev => {
       if (ev.key === 'ArrowUp' && !ev.ctrlKey) {
-        this.focus(-$('lineSkip').value)
+        this.focus(Math.min(-1, -$('lineSkip').value))
         ev.preventDefault()
       } else if (ev.key === 'ArrowDown' && !ev.ctrlKey) {
-        this.focus($('lineSkip').value)
+        this.focus(Math.max(1, $('lineSkip').value))
         ev.preventDefault()
       }
     })
