@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXAcode DATA Packer</title>
+  <link rel="icon" href="favicon.png">
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+      background: #ddd;
+      color: #333;
+    }
+
+    a {
+      color: #30f;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      * {
+        background: #333;
+        color: #ddd;
+      }
+
+      a {
+        color: #5af
+      }
+    }
+
+    body {
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+    }
+
+    main,
+    nav {
+      width: 99%;
+      display: flex;
+      place-content: center;
+      gap: 2ch;
+      margin: 1vh auto;
+    }
+
+    main textarea {
+      height: 65vh;
+      min-width: 24ch;
+      width: 50%;
+    }
+
+    main textarea#output {
+      width: 27ch;
+    }
+
+    button {
+      min-width: 10ch;
+      border-radius: 0.4ch;
+    }
+
+    h2,
+    p {
+      max-width: 90ch;
+      margin: auto;
+    }
+
+  </style>
+</head>
+
+<body>
+  <h1>EXAcode DATA Packer</h1>
+  <main>
+    <textarea id="input" placeholder="type numbers here"></textarea>
+    <textarea id="output" width="24" placeholder="DATA statements appear here"></textarea>
+  </main>
+  <nav>
+    <label for="char-mode"><span>Convert Chars</span><input type="checkbox" id="char-mode" /></label>
+    <button id="copy">Copy</button>
+  </nav>
+  <details>
+    <summary>What's this thing?</summary>
+    <p>The EXAcode DATA Packer takes a list of numbers and converts them to DATA statements that can be pasted into an
+      EXA. Anything that is not a number is ignored. In "Convert Chars" mode, each character is converted to its
+      corresponding code point in the RedShift built in font.</p>
+  </details>
+  <script>
+    'use strict'
+    const input = document.getElementById('input')
+    const output = document.getElementById('output')
+    const charMode = document.getElementById('char-mode')
+    input.addEventListener('input', main)
+    charMode.addEventListener('click', () => {
+      input.setAttribute('placeholder', charMode.checked ? 'type text here' : 'type numbers here')
+      main()
+    })
+    document.getElementById('copy').addEventListener('click', (ev) => navigator.clipboard.writeText(output.value))
+
+    function main() {
+      const result = packNumbers(charMode.checked ? convertString(input.value) : input.value.match(/\d+/g))
+      output.value = result !== 'DATA' ? result : ''
+    }
+
+    function packNumbers(numbers) {
+      const result = ['DATA']
+      for (const number of (numbers || [])) {
+        if (result[result.length - 1].length + number.toString().length > 23) {
+          result.push('DATA')
+        }
+        result[result.length - 1] += ' ' + number
+      }
+      return result.join('\n')
+    }
+
+    function convertString(str) {
+      return str.toUpperCase()
+        .split('')
+        .map((c) => ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.?!'.indexOf(c) + 300)
+        .filter((i) => i >= 300)
+    }
+  </script>
+</body>
+
+</html>
